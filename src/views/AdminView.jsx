@@ -251,7 +251,7 @@ export default function AdminView() {
             [ KONSZOL // HOZZÁFÉRÉS ]
           </div>
           <div>
-            <h1 className="font-editorial text-4xl font-normal text-white italic tracking-tight">
+            <h1 className="text-3xl font-bold text-white tracking-tight">
               Kurátori belépés
             </h1>
             <p className="font-sans text-sm text-neutral-400 font-light mt-2">
@@ -278,7 +278,7 @@ export default function AdminView() {
             [ HOZZÁFÉRÉS // MEGTAKADVA ]
           </div>
           <div>
-            <h1 className="font-editorial text-3xl font-normal text-white italic">
+            <h1 className="text-2xl font-bold text-white tracking-tight">
               Jogosulatlan azonosító
             </h1>
             <p className="font-technical text-xs text-neutral-400 mt-2">
@@ -308,7 +308,7 @@ export default function AdminView() {
       {/* Top Header */}
       <header className="px-6 py-4 sm:px-12 border-b border-neutral-900 bg-neutral-950/70 backdrop-blur-md flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-baseline gap-4">
-          <span className="font-editorial text-2xl tracking-tight italic font-normal text-white">
+          <span className="text-xl font-bold tracking-tight text-white">
             Vélemény
           </span>
           <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
@@ -343,7 +343,7 @@ export default function AdminView() {
               <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 block">
                 [ ÉLŐBEN KIVETÍTETT SZAKASZ ]
               </span>
-              <h2 className="font-editorial text-3xl sm:text-4xl font-normal text-white italic tracking-tight mt-1">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">
                 {activeQ ? activeQ.title : 'Jelenleg nincs aktív kérdés indítva'}
               </h2>
             </div>
@@ -392,7 +392,7 @@ export default function AdminView() {
               <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
                 KATALÓGUS // {questions.length} TÉTEL
               </span>
-              <h2 className="font-editorial text-3xl font-normal text-white italic">Kérdésgyűjtemény</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Kérdésgyűjtemény</h2>
             </div>
 
             <div className="flex items-center gap-3 font-technical text-xs">
@@ -437,7 +437,7 @@ export default function AdminView() {
                         </span>
                       )}
                     </div>
-                    <h3 className="font-editorial text-2xl font-normal text-white italic">
+                    <h3 className="text-xl font-bold text-white tracking-tight">
                       {q.title}
                     </h3>
                     {q.description && (

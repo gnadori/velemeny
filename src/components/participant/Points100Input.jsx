@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Points100Input({ question, onSubmit, submitting }) {
+export default function Points100Input({ question, onSubmit, submitting, t }) {
   const options = question.options || [];
   const [points, setPoints] = useState(() => {
     const initial = {};
@@ -59,10 +59,16 @@ export default function Points100Input({ question, onSubmit, submitting }) {
       }`}>
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] opacity-70">
-            {remaining === 0 ? 'STATUS // KÉSZ A BEKÜLDÉSRE' : remaining < 0 ? 'HIBA // TÚLLÉPÉS' : 'ALLOKÁCIÓS EGYENLEG:'}
+            {remaining === 0
+              ? (t?.points_status_ready || 'STATUS // READY')
+              : remaining < 0
+              ? (t?.points_status_over || 'ERROR // EXCEEDED')
+              : 'BALANCE:'}
           </div>
           <div className="text-xl font-bold tracking-tight mt-0.5">
-            {remaining === 0 ? 'PONTOSAN 100 PONT' : `${remaining} PONT MARADT`}
+            {remaining === 0
+              ? (t?.points_status_exact || 'EXACTLY 100 POINTS')
+              : `${remaining} ${t?.points_remaining || 'POINTS REMAINING'}`}
           </div>
         </div>
 
@@ -70,16 +76,16 @@ export default function Points100Input({ question, onSubmit, submitting }) {
           <button
             type="button"
             onClick={handleDistributeEvenly}
-            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 cursor-pointer"
+            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 cursor-pointer uppercase text-[10px]"
           >
-            EGYENLETES
+            {t?.points_distribute_evenly || 'EGYENLETES'}
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 cursor-pointer"
+            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 cursor-pointer uppercase text-[10px]"
           >
-            RESET
+            {t?.points_reset || 'RESET'}
           </button>
         </div>
       </div>
@@ -92,7 +98,7 @@ export default function Points100Input({ question, onSubmit, submitting }) {
           return (
             <div key={idx} className="p-3.5 bg-neutral-900/60 border border-neutral-800 space-y-2">
               <div className="flex justify-between items-baseline">
-                <span className="font-light text-sm text-neutral-200">{opt}</span>
+                <span className="font-normal text-sm text-neutral-200">{opt}</span>
                 <span className="font-technical text-sm text-white font-bold">{val} P</span>
               </div>
 
@@ -133,7 +139,11 @@ export default function Points100Input({ question, onSubmit, submitting }) {
         disabled={totalAssigned !== 100 || submitting}
         className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : totalAssigned === 100 ? '[ ELOSZTÁS BEKÜLDÉSE ]' : '[ 100 PONT SZÜKSÉGES ]'}
+        {submitting
+          ? `[ ${t?.submitting || 'RÖGZÍTÉS FOLYAMATBAN...'} ]`
+          : totalAssigned === 100
+          ? `[ ${t?.submit_points || 'ELOSZTÁS BEKÜLDÉSE'} ]`
+          : `[ ${t?.need_100_points || '100 PONT SZÜKSÉGES'} ]`}
       </button>
     </form>
   );

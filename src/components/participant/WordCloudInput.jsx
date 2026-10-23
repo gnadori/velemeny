@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function WordCloudInput({ onSubmit, submitting }) {
+export default function WordCloudInput({ onSubmit, submitting, t }) {
   const [words, setWords] = useState(['', '', '']);
 
   const handleChange = (index, value) => {
@@ -33,9 +33,9 @@ export default function WordCloudInput({ onSubmit, submitting }) {
               type="text"
               value={words[i]}
               onChange={(e) => handleChange(i, e.target.value)}
-              placeholder={`Kifejezés 0${i + 1}`}
+              placeholder={`${t?.word_placeholder || 'Kifejezés'} 0${i + 1}`}
               maxLength={40}
-              className="w-full pl-14 pr-4 py-3.5 bg-neutral-900 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-neutral-400 font-light text-base transition-colors"
+              className="w-full pl-14 pr-4 py-3.5 bg-neutral-900 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-neutral-400 font-normal text-base transition-colors"
             />
           </div>
         ))}
@@ -46,7 +46,7 @@ export default function WordCloudInput({ onSubmit, submitting }) {
         disabled={!hasAtLeastOne || submitting}
         className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ VÁLASZOK BEKÜLDÉSE ]'}
+        {submitting ? `[ ${t?.submitting || 'RÖGZÍTÉS FOLYAMATBAN...'} ]` : `[ ${t?.submit_words || 'VÁLASZOK BEKÜLDÉSE'} ]`}
       </button>
     </form>
   );

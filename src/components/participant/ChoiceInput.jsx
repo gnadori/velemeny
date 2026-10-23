@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function ChoiceInput({ question, onSubmit, submitting }) {
+export default function ChoiceInput({ question, onSubmit, submitting, t }) {
   const options = question.options || [];
   const allowMultiple = question.allowMultiple || false;
   const [selected, setSelected] = useState([]);
@@ -45,10 +45,12 @@ export default function ChoiceInput({ question, onSubmit, submitting }) {
                 <span className={`font-technical text-xs ${isSelected ? 'text-neutral-600' : 'text-neutral-500'}`}>
                   [ {letter} ]
                 </span>
-                <span className="font-light text-base tracking-tight">{opt}</span>
+                <span className="font-medium text-base tracking-tight">{opt}</span>
               </div>
               {isSelected && (
-                <span className="font-technical text-xs font-bold tracking-widest">[ KIVÁLASZTVA ]</span>
+                <span className="font-technical text-xs font-bold tracking-widest">
+                  [ {t?.selected_badge || 'KIVÁLASZTVA'} ]
+                </span>
               )}
             </button>
           );
@@ -60,7 +62,7 @@ export default function ChoiceInput({ question, onSubmit, submitting }) {
         disabled={selected.length === 0 || submitting}
         className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ DÖNTÉS BEKÜLDÉSE ]'}
+        {submitting ? `[ ${t?.submitting || 'RÖGZÍTÉS FOLYAMATBAN...'} ]` : `[ ${t?.submit_choice || 'DÖNTÉS BEKÜLDÉSE'} ]`}
       </button>
     </form>
   );

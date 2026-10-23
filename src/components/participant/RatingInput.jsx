@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function RatingInput({ question, onSubmit, submitting }) {
+export default function RatingInput({ question, onSubmit, submitting, t }) {
   const maxScale = question.scaleMax || 5;
   const [rating, setRating] = useState(0);
 
@@ -37,7 +37,9 @@ export default function RatingInput({ question, onSubmit, submitting }) {
       </div>
 
       <div className="text-center font-technical text-[10px] text-neutral-500 uppercase tracking-widest">
-        {rating > 0 ? `KIVÁLASZTVA: [ ${rating} / ${maxScale} ]` : 'VÁLASSZ EGY ÉRTÉKET A SKÁLÁN'}
+        {rating > 0
+          ? `${t?.scale_selected || 'KIVÁLASZTVA'}: [ ${rating} / ${maxScale} ]`
+          : (t?.scale_select || 'VÁLASSZ EGY ÉRTÉKET A SKÁLÁN')}
       </div>
 
       <button
@@ -45,7 +47,7 @@ export default function RatingInput({ question, onSubmit, submitting }) {
         disabled={rating === 0 || submitting}
         className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ ÉRTÉKELÉS BEKÜLDÉSE ]'}
+        {submitting ? `[ ${t?.submitting || 'RÖGZÍTÉS FOLYAMATBAN...'} ]` : `[ ${t?.submit_rating || 'ÉRTÉKELÉS BEKÜLDÉSE'} ]`}
       </button>
     </form>
   );

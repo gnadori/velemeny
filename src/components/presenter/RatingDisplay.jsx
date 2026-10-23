@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-export default function RatingDisplay({ question, responses }) {
+export default function RatingDisplay({ question, responses, t }) {
   const maxScale = question.scaleMax || 5;
 
   const { average, count, distribution } = useMemo(() => {
@@ -24,19 +24,18 @@ export default function RatingDisplay({ question, responses }) {
   }, [responses, maxScale]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-8 sm:p-14 border border-neutral-800 bg-neutral-950/60 backdrop-blur-sm relative flex flex-col md:flex-row items-center gap-12">
-      {/* Corner crosshairs */}
+    <div className="w-full max-w-4xl mx-auto p-8 sm:p-12 border border-neutral-800 bg-neutral-950/60 backdrop-blur-sm relative flex flex-col md:flex-row items-center gap-10">
       <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-neutral-600 -translate-x-[1px] -translate-y-[1px]" />
       <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-neutral-600 translate-x-[1px] -translate-y-[1px]" />
       <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l border-neutral-600 -translate-x-[1px] translate-y-[1px]" />
       <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-neutral-600 translate-x-[1px] translate-y-[1px]" />
 
-      {/* Left side: Editorial Average Number */}
-      <div className="flex flex-col items-center justify-center p-8 border border-neutral-800/80 bg-neutral-900/40 min-w-[220px]">
+      {/* Left side: Clean Big Average Number */}
+      <div className="flex flex-col items-center justify-center p-8 border border-neutral-800/80 bg-neutral-900/40 min-w-[200px]">
         <span className="text-[10px] font-technical uppercase tracking-[0.25em] text-neutral-500 mb-2">
-          ÁTLAGÉRTÉK
+          {t?.average_score || 'ÁTLAGÉRTÉK'}
         </span>
-        <span className="font-editorial text-7xl sm:text-8xl font-normal text-white tracking-tighter">
+        <span className="text-6xl sm:text-7xl font-extrabold text-white tracking-tight">
           {average}
         </span>
         <span className="text-xs font-technical text-neutral-500 mt-2 tracking-widest">
@@ -44,7 +43,7 @@ export default function RatingDisplay({ question, responses }) {
         </span>
         <div className="w-8 h-[1px] bg-neutral-800 my-4" />
         <span className="text-[11px] font-technical text-neutral-400 tracking-wider">
-          MINTASZÁM: {count}
+          {t?.sample_size || 'MINTASZÁM'}: {count}
         </span>
       </div>
 
@@ -57,8 +56,8 @@ export default function RatingDisplay({ question, responses }) {
           return (
             <div key={score} className="space-y-1">
               <div className="flex justify-between items-center text-neutral-400 text-[11px]">
-                <span className="tracking-wider">SKÁLA // {String(score).padStart(2, '0')}</span>
-                <span className="text-neutral-500">{voteCount} szavazat ({percentage}%)</span>
+                <span className="tracking-wider">{t?.scale_label || 'SKÁLA'} // {String(score).padStart(2, '0')}</span>
+                <span className="text-neutral-500">{voteCount} ({percentage}%)</span>
               </div>
               <div className="w-full h-1 bg-neutral-900 border border-neutral-800/80 overflow-hidden">
                 <div

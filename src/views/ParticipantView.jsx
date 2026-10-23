@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getParticipantId } from '../utils/participant';
+import { translations, getSavedLanguage, saveLanguage } from '../utils/i18n';
+import LanguageSelector from '../components/LanguageSelector';
 
 import WordCloudInput from '../components/participant/WordCloudInput';
 import ChoiceInput from '../components/participant/ChoiceInput';
@@ -16,8 +18,15 @@ export default function ParticipantView() {
   const [permissionError, setPermissionError] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [lang, setLang] = useState(getSavedLanguage);
 
+  const t = translations[lang] || translations.hu;
   const participantId = getParticipantId();
+
+  const handleSelectLang = (newLang) => {
+    setLang(newLang);
+    saveLanguage(newLang);
+  };
 
   // Listen to active session
   useEffect(() => {
@@ -73,7 +82,7 @@ export default function ParticipantView() {
       setHasVoted(true);
     } catch (err) {
       console.error('Error submitting response:', err);
-      alert('Hiba történt a válasz mentésekor: ' + (err.message || 'Hálózati vagy jogosultsági hiba'));
+      alert('Hiba / Error / Eroare: ' + (err.message || ''));
     } finally {
       setSubmitting(false);
     }
@@ -82,7 +91,7 @@ export default function ParticipantView() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-neutral-400 font-technical text-xs tracking-[0.25em] uppercase">
-        <span className="animate-pulse">[ CSATLAKOZÁS FOLYAMATBAN... ]</span>
+        <span className="animate-pulse">[ {t.connecting} ]</span>
       </div>
     );
   }
@@ -91,18 +100,20 @@ export default function ParticipantView() {
   if (permissionError) {
     return (
       <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#09090b] text-neutral-300 bg-grid-technical">
-        <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
-          <span>VÉLEMÉNY // ARCHÍVUM</span>
-          <span>STATUS: JOGOSULTSÁG</span>
+        <header className="flex justify-between items-center border-b border-neutral-900 pb-4">
+          <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
+            {t.header_status}: ERROR
+          </span>
+          <LanguageSelector currentLang={lang} onSelectLang={handleSelectLang} />
         </header>
 
         <main className="max-w-md w-full mx-auto text-center space-y-6 my-auto py-12">
           <div className="w-8 h-[1px] bg-red-600 mx-auto" />
-          <h2 className="font-editorial text-3xl sm:text-4xl font-normal text-white italic tracking-tight">
-            Firestore jogosultsági beállítás szükséges
+          <h2 className="text-2xl font-bold text-white tracking-tight">
+            {t.permission_error_title}
           </h2>
-          <p className="font-sans text-xs text-neutral-400 font-light leading-relaxed">
-            A Firebase Firestore adatbázis jelenleg csak bejelentkezett felhasználóknak engedélyezi az olvasást. A nyilvános szavazáshoz közzé kell tenni a biztonsági szabályokat a Firebase Console-ban.
+          <p className="text-xs text-neutral-400 font-light leading-relaxed">
+            {t.permission_error_desc}
           </p>
         </main>
 
@@ -117,23 +128,25 @@ export default function ParticipantView() {
   if (!session?.activeQuestion) {
     return (
       <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#09090b] text-neutral-300 bg-grid-technical">
-        <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
-          <span>VÉLEMÉNY // ARCHÍVUM</span>
-          <span>STÁTUSZ: KÉSZENLÉT</span>
+        <header className="flex justify-between items-center border-b border-neutral-900 pb-4">
+          <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
+            {t.header_status}: {t.status_ready}
+          </span>
+          <LanguageSelector currentLang={lang} onSelectLang={handleSelectLang} />
         </header>
 
         <main className="max-w-md w-full mx-auto text-center space-y-6 my-auto py-12">
           <div className="w-8 h-[1px] bg-neutral-600 mx-auto" />
-          <h2 className="font-editorial text-4xl sm:text-5xl font-normal text-white italic tracking-tight leading-tight">
-            Várakozás az elindításra
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            {t.waiting_title}
           </h2>
-          <p className="font-technical text-xs text-neutral-500 tracking-[0.15em] uppercase">
-            [ Az előadó hamarosan megnyitja a következő szakaszt ]
+          <p className="font-technical text-xs text-neutral-400 tracking-[0.15em] uppercase">
+            [ {t.waiting_subtitle} ]
           </p>
         </main>
 
         <footer className="text-center font-technical text-[9px] uppercase tracking-[0.2em] text-neutral-600 pt-4 border-t border-neutral-900">
-          AMKK / AZUMA MAKOTO INSPIRED MINIMALISM
+          VÉLEMÉNY
         </footer>
       </div>
     );
@@ -143,10 +156,12 @@ export default function ParticipantView() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-neutral-200 bg-grid-technical flex flex-col justify-between p-4 sm:p-8">
-      {/* Top Header */}
-      <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
-        <span>VÉLEMÉNY // INTERAKTÍV</span>
-        <span>{votingOpen ? 'SZAVAZÁS: NYITVA' : 'SZAVAZÁS: ZÁRVA'}</span>
+      {/* Top Header with Language Switcher */}
+      <header className="flex justify-between items-center border-b border-neutral-900 pb-4">
+        <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
+          {votingOpen ? t.status_voting_open : t.status_voting_closed}
+        </span>
+        <LanguageSelector currentLang={lang} onSelectLang={handleSelectLang} />
       </header>
 
       {/* Main Body */}
@@ -154,13 +169,13 @@ export default function ParticipantView() {
         {/* Title */}
         <div className="text-center space-y-3">
           <span className="font-technical text-[10px] uppercase tracking-[0.3em] text-neutral-500 block">
-            [ AKTUÁLIS KÉRDÉS // {activeQuestion.type.toUpperCase()} ]
+            [ {t.current_question} ]
           </span>
-          <h1 className="font-editorial text-3xl sm:text-5xl font-normal text-white italic tracking-tight leading-snug">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-snug">
             {activeQuestion.title}
           </h1>
           {activeQuestion.description && (
-            <p className="font-sans text-sm text-neutral-400 font-light">
+            <p className="text-sm text-neutral-400 font-light">
               {activeQuestion.description}
             </p>
           )}
@@ -170,26 +185,26 @@ export default function ParticipantView() {
         {hasVoted ? (
           <div className="p-10 border border-neutral-800 bg-neutral-950/80 backdrop-blur-sm text-center space-y-4">
             <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 block">
-              STATUS // RÖGZÍTVE
+              STATUS // OK
             </span>
-            <h2 className="font-editorial text-3xl font-normal text-white italic">
-              A válaszod rögzítésre került
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              {t.voted_title}
             </h2>
             <div className="w-6 h-[1px] bg-neutral-700 mx-auto my-3" />
             <p className="font-technical text-xs text-neutral-400 tracking-wider uppercase">
-              Kövesd a kivetítőt a valós idejű eredményekhez
+              {t.voted_subtitle}
             </p>
           </div>
         ) : !votingOpen ? (
           <div className="p-10 border border-neutral-800 bg-neutral-950/80 text-center space-y-3">
             <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 block">
-              STATUS // LEZÁRVA
+              STATUS // LOCKED
             </span>
-            <h2 className="font-editorial text-3xl font-normal text-neutral-300 italic">
-              A szavazás jelenleg zárva
+            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-300 tracking-tight">
+              {t.voting_closed_title}
             </h2>
             <p className="font-technical text-xs text-neutral-500 uppercase tracking-wider">
-              Az előadó felfüggesztette a válaszadást erre a kérdésre
+              {t.voting_closed_subtitle}
             </p>
           </div>
         ) : (
@@ -200,22 +215,22 @@ export default function ParticipantView() {
             <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-neutral-600 translate-x-[1px] translate-y-[1px]" />
 
             {activeQuestion.type === 'wordcloud' && (
-              <WordCloudInput onSubmit={handleSubmit} submitting={submitting} />
+              <WordCloudInput onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
             {activeQuestion.type === 'choice' && (
-              <ChoiceInput question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} />
+              <ChoiceInput question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
             {activeQuestion.type === 'text' && (
-              <TextInput onSubmit={handleSubmit} submitting={submitting} />
+              <TextInput onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
             {activeQuestion.type === 'rating' && (
-              <RatingInput question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} />
+              <RatingInput question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
             {activeQuestion.type === 'points100' && (
-              <Points100Input question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} />
+              <Points100Input question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
             {activeQuestion.type === 'grid2x2' && (
-              <Grid2x2Input question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} />
+              <Grid2x2Input question={activeQuestion} onSubmit={handleSubmit} submitting={submitting} t={t} />
             )}
           </div>
         )}

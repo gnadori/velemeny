@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-export default function Grid2x2Input({ question, onSubmit, submitting }) {
+export default function Grid2x2Input({ question, onSubmit, submitting, t }) {
   const axisX = question.axisX || 'X tengely';
   const axisY = question.axisY || 'Y tengely';
 
@@ -63,7 +63,7 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center font-technical text-[10px] text-neutral-500 uppercase tracking-widest pointer-events-none">
-            [ ÉRINTSD MEG A POZÍCIÓT ]
+            [ {t?.grid_touch_hint || 'ÉRINTSD MEG A POZÍCIÓT'} ]
           </div>
         )}
       </div>
@@ -76,7 +76,7 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
 
       {coords && (
         <div className="text-center font-technical text-[11px] text-neutral-300 tracking-wider">
-          KOORDINÁTÁK: X={coords.x} // Y={coords.y}
+          {t?.grid_coords || 'KOORDINÁTÁK'}: X={coords.x} // Y={coords.y}
         </div>
       )}
 
@@ -85,7 +85,7 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
         disabled={!coords || submitting}
         className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ POZÍCIÓ BEKÜLDÉSE ]'}
+        {submitting ? `[ ${t?.submitting || 'RÖGZÍTÉS FOLYAMATBAN...'} ]` : `[ ${t?.submit_grid || 'POZÍCIÓ BEKÜLDÉSE'} ]`}
       </button>
     </form>
   );
