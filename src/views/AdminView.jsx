@@ -317,14 +317,15 @@ export default function AdminView() {
         </div>
 
         <div className="flex items-center gap-4 font-technical text-xs">
-          <a
-            href="#/present"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 border border-neutral-700 hover:border-neutral-500 bg-neutral-900 text-neutral-200 transition text-[10px] uppercase tracking-wider"
+          <button
+            onClick={() => {
+              const presentUrl = `${window.location.origin}${window.location.pathname}#/present`;
+              window.open(presentUrl, '_blank', 'noopener,noreferrer');
+            }}
+            className="px-3 py-1.5 border border-neutral-700 hover:border-neutral-400 bg-neutral-900 text-neutral-200 hover:text-white transition text-[10px] uppercase tracking-wider cursor-pointer"
           >
             [ KIVETÍTŐ MEGNYITÁSA ↗ ]
-          </a>
+          </button>
           <button
             onClick={handleLogout}
             className="px-2.5 py-1.5 border border-neutral-800 hover:border-neutral-600 bg-neutral-900 text-neutral-400 hover:text-white transition cursor-pointer text-[10px] uppercase tracking-wider"
@@ -369,6 +370,16 @@ export default function AdminView() {
                 className="px-4 py-2.5 border border-neutral-800 hover:border-neutral-700 bg-neutral-900 text-neutral-400 hover:text-white transition cursor-pointer uppercase tracking-wider"
               >
                 [ VÁLASZOK NULLÁZÁSA ]
+              </button>
+
+              <button
+                onClick={() => {
+                  const presentUrl = `${window.location.origin}${window.location.pathname}#/present`;
+                  window.open(presentUrl, '_blank', 'noopener,noreferrer');
+                }}
+                className="px-4 py-2.5 border border-neutral-700 hover:border-white bg-neutral-900 text-neutral-200 hover:text-white transition cursor-pointer uppercase tracking-wider"
+              >
+                [ KIVETÍTŐ ÚJ ABLAKBAN ↗ ]
               </button>
 
               <button
