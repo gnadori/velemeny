@@ -16,21 +16,21 @@ export default function TextInput({ onSubmit, submitting }) {
           rows={4}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Írd ide a válaszodat..."
+          placeholder="Fogalmazd meg a gondolatodat..."
           maxLength={300}
-          className="w-full p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100 font-medium text-lg resize-none shadow-sm"
+          className="w-full p-4 bg-neutral-900 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-neutral-400 font-light text-base resize-none transition-colors"
         />
-        <div className="text-right text-xs text-slate-400 mt-1">
-          {text.length} / 300 karakter
+        <div className="text-right font-technical text-[10px] text-neutral-500 mt-1 uppercase tracking-widest">
+          [ {String(text.length).padStart(3, '0')} / 300 KARAKTER ]
         </div>
       </div>
 
       <button
         type="submit"
         disabled={!text.trim() || submitting}
-        className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer"
+        className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? 'Beküldés...' : 'Válasz beküldése'}
+        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ GONDOLAT BEKÜLDÉSE ]'}
       </button>
     </form>
   );

@@ -4,7 +4,7 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
   const axisX = question.axisX || 'X tengely';
   const axisY = question.axisY || 'Y tengely';
 
-  const [coords, setCoords] = useState(null); // { x: 5, y: 5 }
+  const [coords, setCoords] = useState(null);
   const gridRef = useRef(null);
 
   const handleGridClick = (e) => {
@@ -13,9 +13,7 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    // Normalizing between 1 and 10
     const rawX = (clickX / rect.width) * 9 + 1;
-    // Y is inverted (top is high, bottom is low)
     const rawY = ((rect.height - clickY) / rect.height) * 9 + 1;
 
     setCoords({
@@ -32,71 +30,62 @@ export default function Grid2x2Input({ question, onSubmit, submitting }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md mx-auto">
-      <p className="text-sm text-center text-slate-500">
-        Kattints vagy érintsd meg a rácsot az elhelyezéshez!
-      </p>
-
-      {/* Top Label */}
-      <div className="text-xs font-bold text-center text-slate-500 uppercase tracking-wider">
-        ↑ {axisY} (Magas)
+      <div className="font-technical text-[10px] text-center text-neutral-400 uppercase tracking-[0.25em]">
+        ↑ {axisY} [ MAX ]
       </div>
 
-      {/* Interactive 2x2 Tap Area */}
       <div
         ref={gridRef}
         onClick={handleGridClick}
-        className="relative w-full aspect-square max-w-[340px] mx-auto bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-indigo-200 dark:border-slate-700 overflow-hidden shadow-inner cursor-crosshair touch-none select-none"
+        className="relative w-full aspect-square max-w-[320px] mx-auto bg-neutral-900 border border-neutral-700 overflow-hidden cursor-crosshair touch-none select-none"
       >
-        {/* Quadrant Guidelines */}
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 opacity-30 pointer-events-none">
-          <div className="border-r border-b border-dashed border-slate-400" />
-          <div className="border-b border-dashed border-slate-400" />
-          <div className="border-r border-dashed border-slate-400" />
+        {/* Subtle Quadrant borders */}
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 pointer-events-none">
+          <div className="border-r border-b border-neutral-800/80" />
+          <div className="border-b border-neutral-800/80" />
+          <div className="border-r border-neutral-800/80" />
           <div />
         </div>
 
         {/* Center axes */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-indigo-500/40" />
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-indigo-500/40" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-neutral-600" />
+        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-neutral-600" />
 
-        {/* Selected Point Marker */}
+        {/* Target Marker */}
         {coords ? (
           <div
             style={{
-              left: `${((coords.x - 1) / 9) * 90 + 5}%`,
-              bottom: `${((coords.y - 1) / 9) * 90 + 5}%`,
+              left: `${((coords.x - 1) / 9) * 88 + 6}%`,
+              bottom: `${((coords.y - 1) / 9) * 88 + 6}%`,
               transform: 'translate(-50%, 50%)'
             }}
-            className="absolute w-7 h-7 rounded-full bg-indigo-600 border-2 border-white shadow-xl shadow-indigo-600/50 flex items-center justify-center animate-bounce-short pointer-events-none"
-          >
-            <div className="w-2 h-2 rounded-full bg-white" />
-          </div>
+            className="absolute w-4 h-4 rounded-full bg-white border border-black shadow-[0_0_10px_white] pointer-events-none"
+          />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm font-semibold pointer-events-none">
-            Érintsd meg a pozíciót
+          <div className="absolute inset-0 flex items-center justify-center font-technical text-[10px] text-neutral-500 uppercase tracking-widest pointer-events-none">
+            [ ÉRINTSD MEG A POZÍCIÓT ]
           </div>
         )}
       </div>
 
-      {/* Bottom Label */}
-      <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider px-2">
-        <span>← Alacsony {axisX}</span>
-        <span>Magas →</span>
+      <div className="flex justify-between font-technical text-[10px] text-neutral-400 uppercase tracking-[0.2em]">
+        <span>← [ MIN ]</span>
+        <span>{axisX}</span>
+        <span>[ MAX ] →</span>
       </div>
 
-      {/* Coords badge */}
       {coords && (
-        <div className="text-center text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-          Kiválasztva: {axisX} = {coords.x}, {axisY} = {coords.y}
+        <div className="text-center font-technical text-[11px] text-neutral-300 tracking-wider">
+          KOORDINÁTÁK: X={coords.x} // Y={coords.y}
         </div>
       )}
 
       <button
         type="submit"
         disabled={!coords || submitting}
-        className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer"
+        className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? 'Beküldés...' : 'Pozíció beküldése'}
+        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ POZÍCIÓ BEKÜLDÉSE ]'}
       </button>
     </form>
   );

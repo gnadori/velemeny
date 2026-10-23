@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Star } from 'lucide-react';
 
 export default function RatingInput({ question, onSubmit, submitting }) {
   const maxScale = question.scaleMax || 5;
@@ -13,42 +12,40 @@ export default function RatingInput({ question, onSubmit, submitting }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md mx-auto">
-      <div className="flex justify-center items-center gap-2 py-4">
+      <div className="grid grid-cols-5 gap-2 py-4">
         {Array.from({ length: maxScale }, (_, i) => i + 1).map((val) => {
-          const isSelected = rating >= val;
+          const isSelected = rating === val;
 
           return (
             <button
               type="button"
               key={val}
               onClick={() => setRating(val)}
-              className="flex flex-col items-center gap-2 p-2 hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              className={`p-3 border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                isSelected
+                  ? 'bg-white text-black border-white'
+                  : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-600'
+              }`}
             >
-              <Star
-                className={`w-10 h-10 transition-colors ${
-                  isSelected
-                    ? 'fill-amber-400 text-amber-400 drop-shadow-md'
-                    : 'text-slate-300 dark:text-slate-700'
-                }`}
-              />
-              <span className={`text-sm font-bold ${rating === val ? 'text-amber-500' : 'text-slate-400'}`}>
+              <span className="font-technical text-sm font-bold">
                 {val}
               </span>
+              <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-black' : 'bg-neutral-700'}`} />
             </button>
           );
         })}
       </div>
 
-      <div className="text-center font-medium text-slate-500 text-sm">
-        {rating > 0 ? `Kiválasztott érték: ${rating} / ${maxScale}` : 'Kattints egy csillagra az értékeléshez'}
+      <div className="text-center font-technical text-[10px] text-neutral-500 uppercase tracking-widest">
+        {rating > 0 ? `KIVÁLASZTVA: [ ${rating} / ${maxScale} ]` : 'VÁLASSZ EGY ÉRTÉKET A SKÁLÁN'}
       </div>
 
       <button
         type="submit"
         disabled={rating === 0 || submitting}
-        className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer"
+        className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? 'Beküldés...' : 'Értékelés beküldése'}
+        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ ÉRTÉKELÉS BEKÜLDÉSE ]'}
       </button>
     </form>
   );

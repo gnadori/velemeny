@@ -28,38 +28,38 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen">
-      {/* Subtle Switcher for development & easy navigation */}
-      <nav className="fixed bottom-3 right-3 z-50 flex items-center gap-1.5 p-1 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-700/60 shadow-2xl text-xs font-semibold text-slate-300">
+    <div className="relative min-h-screen bg-[#09090b]">
+      {/* Minimalist View Switcher */}
+      <nav className="fixed bottom-4 right-4 z-50 flex items-center gap-1 p-1 bg-neutral-950/90 border border-neutral-800 shadow-2xl font-technical text-[10px] tracking-[0.15em] uppercase">
         <a
           href="#/"
-          className={`px-3 py-1.5 rounded-xl transition ${
+          className={`px-3 py-1.5 transition ${
             currentRoute === 'participant'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'hover:text-white hover:bg-slate-800'
+              ? 'bg-white text-black font-bold'
+              : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Résztvevő
+          [ RÉSZTVEVŐ ]
         </a>
         <a
           href="#/present"
-          className={`px-3 py-1.5 rounded-xl transition ${
+          className={`px-3 py-1.5 transition ${
             currentRoute === 'present'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'hover:text-white hover:bg-slate-800'
+              ? 'bg-white text-black font-bold'
+              : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Kivetítő
+          [ KIVETÍTŐ ]
         </a>
         <a
           href="#/admin"
-          className={`px-3 py-1.5 rounded-xl transition ${
+          className={`px-3 py-1.5 transition ${
             currentRoute === 'admin'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'hover:text-white hover:bg-slate-800'
+              ? 'bg-white text-black font-bold'
+              : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Admin
+          [ ADMIN ]
         </a>
       </nav>
 

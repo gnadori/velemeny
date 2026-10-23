@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
 
 export default function ChoiceInput({ question, onSubmit, submitting }) {
   const options = question.options || [];
@@ -26,7 +25,7 @@ export default function ChoiceInput({ question, onSubmit, submitting }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto">
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {options.map((opt, idx) => {
           const isSelected = selected.includes(opt);
           const letter = String.fromCharCode(65 + idx);
@@ -36,25 +35,21 @@ export default function ChoiceInput({ question, onSubmit, submitting }) {
               type="button"
               key={idx}
               onClick={() => toggleOption(opt)}
-              className={`w-full p-4 rounded-2xl border-2 text-left flex items-center justify-between transition-all cursor-pointer ${
+              className={`w-full p-4 border text-left flex items-baseline justify-between transition-all cursor-pointer ${
                 isSelected
-                  ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 shadow-md ring-2 ring-indigo-500/20'
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:border-slate-300'
+                  ? 'bg-white text-black border-white'
+                  : 'bg-neutral-900/80 text-neutral-200 border-neutral-800 hover:border-neutral-600'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <span
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm ${
-                    isSelected
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                  }`}
-                >
-                  {letter}
+              <div className="flex items-baseline gap-3">
+                <span className={`font-technical text-xs ${isSelected ? 'text-neutral-600' : 'text-neutral-500'}`}>
+                  [ {letter} ]
                 </span>
-                <span className="font-semibold text-lg">{opt}</span>
+                <span className="font-light text-base tracking-tight">{opt}</span>
               </div>
-              {isSelected && <Check className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />}
+              {isSelected && (
+                <span className="font-technical text-xs font-bold tracking-widest">[ KIVÁLASZTVA ]</span>
+              )}
             </button>
           );
         })}
@@ -63,9 +58,9 @@ export default function ChoiceInput({ question, onSubmit, submitting }) {
       <button
         type="submit"
         disabled={selected.length === 0 || submitting}
-        className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer"
+        className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? 'Beküldés...' : 'Válasz beküldése'}
+        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : '[ DÖNTÉS BEKÜLDÉSE ]'}
       </button>
     </form>
   );

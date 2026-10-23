@@ -7,85 +7,80 @@ export default function Grid2x2Display({ question, responses }) {
   const points = responses
     .filter(r => r.value && typeof r.value.x === 'number' && typeof r.value.y === 'number')
     .map(r => ({
-      x: r.value.x, // 1 - 10
-      y: r.value.y  // 1 - 10
+      x: r.value.x,
+      y: r.value.y
     }));
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 rounded-3xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md shadow-xl border border-slate-200/50 dark:border-slate-800 flex flex-col items-center">
-      
-      {/* Top label: Y max */}
-      <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">
-        ↑ {axisY} (Magas)
+    <div className="w-full max-w-3xl mx-auto p-8 sm:p-12 border border-neutral-800 bg-neutral-950/60 backdrop-blur-sm relative flex flex-col items-center">
+      {/* Corner crosshairs */}
+      <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-neutral-600 -translate-x-[1px] -translate-y-[1px]" />
+      <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-neutral-600 translate-x-[1px] -translate-y-[1px]" />
+      <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l border-neutral-600 -translate-x-[1px] translate-y-[1px]" />
+      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-neutral-600 translate-x-[1px] translate-y-[1px]" />
+
+      {/* Top Label */}
+      <div className="font-technical text-[10px] text-neutral-400 uppercase tracking-[0.25em] mb-4">
+        ↑ {axisY} [ MAX ]
       </div>
 
-      <div className="flex items-center w-full">
-        {/* Left label: rotated Y */}
-        <div className="text-xs font-bold text-slate-400 -rotate-90 origin-center -ml-8 mr-2 uppercase tracking-widest whitespace-nowrap hidden sm:block">
-          {axisY}
-        </div>
-
-        {/* The 2x2 Grid Canvas */}
-        <div className="relative w-full aspect-square max-w-[500px] mx-auto bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-300 dark:border-slate-700 overflow-hidden shadow-inner">
-          {/* Quadrant backgrounds */}
-          <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 opacity-30 pointer-events-none">
-            <div className="border-r border-b border-dashed border-slate-400 flex items-start justify-start p-3 text-xs font-semibold text-slate-500">
-              II. Magas Y / Alacsony X
-            </div>
-            <div className="border-b border-dashed border-slate-400 flex items-start justify-end p-3 text-xs font-semibold text-slate-500">
-              I. Magas Y / Magas X
-            </div>
-            <div className="border-r border-dashed border-slate-400 flex items-end justify-start p-3 text-xs font-semibold text-slate-500">
-              III. Alacsony Y / Alacsony X
-            </div>
-            <div className="flex items-end justify-end p-3 text-xs font-semibold text-slate-500">
-              IV. Alacsony Y / Magas X
-            </div>
+      {/* 2x2 Coordinate Canvas */}
+      <div className="relative w-full aspect-square max-w-[480px] mx-auto bg-neutral-900/40 border border-neutral-700/80 overflow-hidden">
+        {/* Quadrant fine background labels */}
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 pointer-events-none font-technical text-[9px] text-neutral-600 tracking-widest uppercase">
+          <div className="border-r border-b border-neutral-800/80 p-3">
+            II. MAGAS Y / ALACSONY X
           </div>
-
-          {/* Center Crosshairs */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-indigo-500/40" />
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-indigo-500/40" />
-
-          {/* Plotted Points */}
-          {points.map((p, i) => {
-            // Convert scale 1-10 to percentage 5% to 95%
-            const leftPct = ((p.x - 1) / 9) * 90 + 5;
-            const bottomPct = ((p.y - 1) / 9) * 90 + 5;
-
-            return (
-              <div
-                key={i}
-                style={{
-                  left: `${leftPct}%`,
-                  bottom: `${bottomPct}%`,
-                  transform: 'translate(-50%, 50%)'
-                }}
-                className="absolute w-5 h-5 rounded-full bg-indigo-600 border-2 border-white dark:border-slate-900 shadow-lg shadow-indigo-500/50 flex items-center justify-center animate-bounce-short hover:scale-150 transition-transform cursor-pointer"
-                title={`X: ${p.x.toFixed(1)}, Y: ${p.y.toFixed(1)}`}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-white" />
-              </div>
-            );
-          })}
-
-          {points.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm font-medium">
-              Kattintásra vagy beküldésre vár...
-            </div>
-          )}
+          <div className="border-b border-neutral-800/80 p-3 text-right">
+            I. MAGAS Y / MAGAS X
+          </div>
+          <div className="border-r border-neutral-800/80 p-3 flex items-end">
+            III. ALACSONY Y / ALACSONY X
+          </div>
+          <div className="p-3 flex items-end justify-end">
+            IV. ALACSONY Y / MAGAS X
+          </div>
         </div>
+
+        {/* Center Hairline Crosshairs */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-neutral-600/70" />
+        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-neutral-600/70" />
+
+        {/* Plotted Data Nodes */}
+        {points.map((p, i) => {
+          const leftPct = ((p.x - 1) / 9) * 88 + 6;
+          const bottomPct = ((p.y - 1) / 9) * 88 + 6;
+
+          return (
+            <div
+              key={i}
+              style={{
+                left: `${leftPct}%`,
+                bottom: `${bottomPct}%`,
+                transform: 'translate(-50%, 50%)'
+              }}
+              className="absolute w-3.5 h-3.5 rounded-full bg-white border border-black shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-transform hover:scale-150 cursor-pointer"
+              title={`X: ${p.x.toFixed(1)}, Y: ${p.y.toFixed(1)}`}
+            />
+          );
+        })}
+
+        {points.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center font-technical text-[10px] text-neutral-600 tracking-widest uppercase">
+            [ MÉRÉSI PONTOKRA VÁRVA ]
+          </div>
+        )}
       </div>
 
-      {/* Bottom label: X axis */}
-      <div className="mt-3 flex justify-between w-full max-w-[500px] text-xs font-bold text-slate-500 uppercase tracking-wider">
-        <span>← Alacsony</span>
+      {/* Bottom Axis Label */}
+      <div className="mt-4 flex justify-between w-full max-w-[480px] font-technical text-[10px] text-neutral-400 uppercase tracking-[0.2em]">
+        <span>← [ MIN ]</span>
         <span>{axisX}</span>
-        <span>Magas →</span>
+        <span>[ MAX ] →</span>
       </div>
 
-      <div className="mt-2 text-xs text-slate-400 font-medium">
-        Összesen {points.length} pont elhelyezve a rácson
+      <div className="mt-4 font-technical text-[10px] text-neutral-500 tracking-widest uppercase">
+        KOORDINÁTA ARCHÍVUM: {points.length} PONT RÖGZÍTVE
       </div>
     </div>
   );

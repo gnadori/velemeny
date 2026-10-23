@@ -1,15 +1,5 @@
 import React, { useMemo } from 'react';
 
-const BAR_COLORS = [
-  'bg-blue-500 text-blue-500',
-  'bg-indigo-500 text-indigo-500',
-  'bg-purple-500 text-purple-500',
-  'bg-pink-500 text-pink-500',
-  'bg-amber-500 text-amber-500',
-  'bg-emerald-500 text-emerald-500',
-  'bg-cyan-500 text-cyan-500'
-];
-
 export default function ChoiceDisplay({ question, responses }) {
   const options = question.options || [];
 
@@ -35,35 +25,45 @@ export default function ChoiceDisplay({ question, responses }) {
         option: opt,
         count,
         percentage,
-        color: BAR_COLORS[idx % BAR_COLORS.length]
+        indexStr: String(idx + 1).padStart(2, '0')
       };
     });
   }, [options, responses]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4 p-8 rounded-3xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md shadow-xl border border-slate-200/50 dark:border-slate-800">
-      {stats.map(({ option, count, percentage, color }, idx) => (
-        <div key={idx} className="space-y-1.5">
-          <div className="flex justify-between items-baseline text-slate-800 dark:text-slate-100 font-medium">
-            <span className="text-xl font-semibold flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-600 dark:text-slate-300">
-                {String.fromCharCode(65 + idx)}
+    <div className="w-full max-w-4xl mx-auto space-y-4 p-8 sm:p-12 border border-neutral-800 bg-neutral-950/60 backdrop-blur-sm relative">
+      {/* Corner crosshairs */}
+      <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-neutral-600 -translate-x-[1px] -translate-y-[1px]" />
+      <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-neutral-600 translate-x-[1px] -translate-y-[1px]" />
+      <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l border-neutral-600 -translate-x-[1px] translate-y-[1px]" />
+      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-neutral-600 translate-x-[1px] translate-y-[1px]" />
+
+      <div className="space-y-6">
+        {stats.map(({ option, count, percentage, indexStr }, idx) => (
+          <div key={idx} className="space-y-2 group">
+            <div className="flex justify-between items-baseline font-light">
+              <span className="text-base sm:text-lg text-neutral-200 flex items-baseline gap-3 tracking-tight">
+                <span className="font-technical text-xs text-neutral-500 font-normal">
+                  [ {indexStr} ]
+                </span>
+                <span>{option}</span>
               </span>
-              {option}
-            </span>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold">{count} szavazat</span>
-              <span className="text-sm font-semibold text-slate-400">({percentage}%)</span>
+              <div className="flex items-baseline gap-3 font-technical text-sm">
+                <span className="text-white font-medium">{percentage}%</span>
+                <span className="text-neutral-500 text-xs">({count})</span>
+              </div>
+            </div>
+
+            {/* Hairline geometric progress bar */}
+            <div className="w-full h-1.5 bg-neutral-900 border border-neutral-800/80 overflow-hidden">
+              <div
+                className="h-full bg-white transition-all duration-700 ease-out"
+                style={{ width: `${percentage}%` }}
+              />
             </div>
           </div>
-          <div className="w-full h-8 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-1 shadow-inner">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ease-out ${color.split(' ')[0]}`}
-              style={{ width: `${Math.max(percentage, count > 0 ? 3 : 0)}%` }}
-            />
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

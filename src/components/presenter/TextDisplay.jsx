@@ -1,5 +1,4 @@
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
 
 export default function TextDisplay({ responses }) {
   const items = responses
@@ -8,25 +7,33 @@ export default function TextDisplay({ responses }) {
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-400 animate-pulse">
-        <MessageSquare className="w-16 h-16 mb-4 opacity-40" />
-        <p className="text-2xl font-light">Még nem érkezett szöveges válasz...</p>
-        <p className="text-sm mt-2 text-slate-500">Amint valaki beküldi a gondolatát, itt azonnal megjelenik egy kártyán.</p>
+      <div className="flex flex-col items-center justify-center py-28 text-neutral-500 font-technical text-xs tracking-[0.2em] uppercase">
+        <span className="w-8 h-[1px] bg-neutral-700 mb-6" />
+        <span>[ ARCHÍVUM // ÜRES ]</span>
+        <span className="text-neutral-600 mt-2 text-[10px] tracking-widest">A beérkező szöveges válaszok indexkártyákként fognak megjelenni</span>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[65vh] overflow-y-auto p-4 custom-scrollbar">
+    <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[65vh] overflow-y-auto p-2">
       {items.map((text, idx) => (
         <div
           key={idx}
-          className="p-5 rounded-2xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md shadow-md border border-slate-200/60 dark:border-slate-800 text-slate-800 dark:text-slate-100 flex flex-col justify-between hover:shadow-lg transition-all"
+          className="relative p-6 border border-neutral-800 bg-neutral-950/70 backdrop-blur-sm text-neutral-200 flex flex-col justify-between hover:border-neutral-700 transition-colors"
         >
-          <p className="text-lg leading-relaxed font-normal whitespace-pre-wrap">{text}</p>
-          <div className="mt-4 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-400">
-            <span>#{idx + 1}</span>
-            <span>Válasz</span>
+          {/* Subtle top index line */}
+          <div className="flex justify-between items-center text-[10px] font-technical uppercase tracking-[0.2em] text-neutral-500 pb-3 border-b border-neutral-900 mb-4">
+            <span>INDEX // {String(idx + 1).padStart(3, '0')}</span>
+            <span>BEJEGYZÉS</span>
+          </div>
+
+          <p className="font-editorial text-xl sm:text-2xl leading-relaxed text-neutral-100 font-normal italic">
+            "{text}"
+          </p>
+
+          <div className="mt-6 flex justify-end text-[10px] font-technical text-neutral-600 tracking-widest">
+            +
           </div>
         </div>
       ))}

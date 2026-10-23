@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Plus, Minus, RotateCcw } from 'lucide-react';
 
 export default function Points100Input({ question, onSubmit, submitting }) {
   const options = question.options || [];
@@ -50,61 +49,60 @@ export default function Points100Input({ question, onSubmit, submitting }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-lg mx-auto">
-      {/* Remaining Points Meter */}
-      <div className={`p-4 rounded-2xl border-2 flex items-center justify-between transition-colors ${
+      {/* Allocation Status Box */}
+      <div className={`p-4 border font-technical flex items-center justify-between transition-colors ${
         remaining === 0
-          ? 'bg-emerald-50 border-emerald-500 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200'
+          ? 'bg-neutral-900 border-white text-white'
           : remaining < 0
-          ? 'bg-rose-50 border-rose-500 text-rose-900 dark:bg-rose-950/40 dark:text-rose-200'
-          : 'bg-amber-50 border-amber-400 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200'
+          ? 'bg-neutral-900 border-red-500/80 text-red-400'
+          : 'bg-neutral-900/60 border-neutral-800 text-neutral-400'
       }`}>
         <div>
-          <div className="text-xs uppercase font-bold tracking-wider opacity-80">
-            {remaining === 0 ? 'Pontosan 100 pont kiosztva!' : remaining < 0 ? 'Túl sok pontot osztottál ki!' : 'Még kiosztható pontok:'}
+          <div className="text-[10px] uppercase tracking-[0.2em] opacity-70">
+            {remaining === 0 ? 'STATUS // KÉSZ A BEKÜLDÉSRE' : remaining < 0 ? 'HIBA // TÚLLÉPÉS' : 'ALLOKÁCIÓS EGYENLEG:'}
           </div>
-          <div className="text-2xl font-black">
-            {remaining === 0 ? 'Kész a beküldésre' : `${remaining} pont maradt`}
+          <div className="text-xl font-bold tracking-tight mt-0.5">
+            {remaining === 0 ? 'PONTOSAN 100 PONT' : `${remaining} PONT MARADT`}
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 text-xs">
           <button
             type="button"
             onClick={handleDistributeEvenly}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 cursor-pointer"
+            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 cursor-pointer"
           >
-            Egyenletes
+            EGYENLETES
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 text-slate-500 cursor-pointer"
-            title="Törlés"
+            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 cursor-pointer"
           >
-            <RotateCcw className="w-4 h-4" />
+            RESET
           </button>
         </div>
       </div>
 
-      {/* Sliders list */}
-      <div className="space-y-4">
+      {/* Sliders */}
+      <div className="space-y-3">
         {options.map((opt, idx) => {
           const val = points[opt] || 0;
 
           return (
-            <div key={idx} className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-slate-800 dark:text-slate-100">{opt}</span>
-                <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">{val} p</span>
+            <div key={idx} className="p-3.5 bg-neutral-900/60 border border-neutral-800 space-y-2">
+              <div className="flex justify-between items-baseline">
+                <span className="font-light text-sm text-neutral-200">{opt}</span>
+                <span className="font-technical text-sm text-white font-bold">{val} P</span>
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => handleStep(opt, -5)}
-                  className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center border border-neutral-700 text-neutral-400 hover:text-white cursor-pointer font-technical text-xs"
                 >
-                  <Minus className="w-4 h-4" />
+                  -
                 </button>
 
                 <input
@@ -114,15 +112,15 @@ export default function Points100Input({ question, onSubmit, submitting }) {
                   step="1"
                   value={val}
                   onChange={(e) => handleSliderChange(opt, e.target.value)}
-                  className="flex-1 accent-indigo-600 cursor-pointer"
+                  className="flex-1 accent-white cursor-pointer"
                 />
 
                 <button
                   type="button"
                   onClick={() => handleStep(opt, 5)}
-                  className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center border border-neutral-700 text-neutral-400 hover:text-white cursor-pointer font-technical text-xs"
                 >
-                  <Plus className="w-4 h-4" />
+                  +
                 </button>
               </div>
             </div>
@@ -133,9 +131,9 @@ export default function Points100Input({ question, onSubmit, submitting }) {
       <button
         type="submit"
         disabled={totalAssigned !== 100 || submitting}
-        className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer"
+        className="w-full py-4 px-6 bg-white hover:bg-neutral-200 disabled:bg-neutral-800 text-black disabled:text-neutral-500 font-technical text-xs uppercase tracking-[0.2em] font-bold transition cursor-pointer disabled:cursor-not-allowed"
       >
-        {submitting ? 'Beküldés...' : totalAssigned === 100 ? 'Elosztás beküldése' : 'Állítsd be pontosan 100 pontra'}
+        {submitting ? '[ RÖGZÍTÉS FOLYAMATBAN... ]' : totalAssigned === 100 ? '[ ELOSZTÁS BEKÜLDÉSE ]' : '[ 100 PONT SZÜKSÉGES ]'}
       </button>
     </form>
   );

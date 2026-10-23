@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getParticipantId } from '../utils/participant';
-import { CheckCircle2, Clock, Lock, Sparkles } from 'lucide-react';
 
 import WordCloudInput from '../components/participant/WordCloudInput';
 import ChoiceInput from '../components/participant/ChoiceInput';
@@ -22,11 +21,7 @@ export default function ParticipantView() {
   // Listen to active session
   useEffect(() => {
     const unsubSession = onSnapshot(doc(db, 'sessions', 'active'), (snap) => {
-      if (snap.exists()) {
-        setSession(snap.data());
-      } else {
-        setSession(null);
-      }
+      setSession(snap.exists() ? snap.data() : null);
       setLoading(false);
     });
 
@@ -65,7 +60,7 @@ export default function ParticipantView() {
       setHasVoted(true);
     } catch (err) {
       console.error('Error submitting response:', err);
-      alert('Hiba történt a válasz elküldésekor. Kérlek próbáld újra!');
+      alert('Hiba történt a válasz mentésekor.');
     } finally {
       setSubmitting(false);
     }
@@ -73,8 +68,8 @@ export default function ParticipantView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
-        <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-neutral-400 font-technical text-xs tracking-[0.25em] uppercase">
+        <span className="animate-pulse">[ BETÖLTÉS... ]</span>
       </div>
     );
   }
@@ -82,18 +77,25 @@ export default function ParticipantView() {
   // No active question
   if (!session?.activeQuestion) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 text-center">
-        <div className="max-w-md w-full bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 space-y-4">
-          <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-2xl mx-auto flex items-center justify-center">
-            <Clock className="w-8 h-8 animate-pulse" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-            Hamarosan kezdünk!
+      <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#09090b] text-neutral-300 bg-grid-technical">
+        <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
+          <span>VÉLEMÉNY // ARCHÍVUM</span>
+          <span>STÁTUSZ: KÉSZENLÉT</span>
+        </header>
+
+        <main className="max-w-md w-full mx-auto text-center space-y-6 my-auto py-12">
+          <div className="w-8 h-[1px] bg-neutral-600 mx-auto" />
+          <h2 className="font-editorial text-4xl sm:text-5xl font-normal text-white italic tracking-tight leading-tight">
+            Várakozás az elindításra
           </h2>
-          <p className="text-slate-500 dark:text-slate-400">
-            Kérlek várj, amíg az előadó elindítja az első kérdést. A képernyő automatikusan frissülni fog.
+          <p className="font-technical text-xs text-neutral-500 tracking-[0.15em] uppercase">
+            [ Az előadó hamarosan megnyitja a következő szakaszt ]
           </p>
-        </div>
+        </main>
+
+        <footer className="text-center font-technical text-[9px] uppercase tracking-[0.2em] text-neutral-600 pt-4 border-t border-neutral-900">
+          AMKK / AZUMA MAKOTO INSPIRED MINIMALISM
+        </footer>
       </div>
     );
   }
@@ -101,52 +103,64 @@ export default function ParticipantView() {
   const { activeQuestion, votingOpen = true } = session;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col justify-between p-4 sm:p-6">
-      <main className="max-w-md w-full mx-auto my-auto py-6">
-        {/* Header / Question Title */}
-        <div className="text-center mb-8 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-            <Sparkles className="w-3.5 h-3.5" />
-            Aktuális kérdés
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+    <div className="min-h-screen bg-[#09090b] text-neutral-200 bg-grid-technical flex flex-col justify-between p-4 sm:p-8">
+      {/* Top Header */}
+      <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
+        <span>VÉLEMÉNY // INTERAKTÍV</span>
+        <span>{votingOpen ? 'SZAVAZÁS: NYITVA' : 'SZAVAZÁS: ZÁRVA'}</span>
+      </header>
+
+      {/* Main Body */}
+      <main className="max-w-xl w-full mx-auto my-auto py-8 space-y-8">
+        {/* Title */}
+        <div className="text-center space-y-3">
+          <span className="font-technical text-[10px] uppercase tracking-[0.3em] text-neutral-500 block">
+            [ AKTUÁLIS KÉRDÉS // {activeQuestion.type.toUpperCase()} ]
+          </span>
+          <h1 className="font-editorial text-3xl sm:text-5xl font-normal text-white italic tracking-tight leading-snug">
             {activeQuestion.title}
           </h1>
           {activeQuestion.description && (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="font-sans text-sm text-neutral-400 font-light">
               {activeQuestion.description}
             </p>
           )}
         </div>
 
-        {/* Voting state condition */}
+        {/* State rendering */}
         {hasVoted ? (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 text-center space-y-4 animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-2xl mx-auto flex items-center justify-center">
-              <CheckCircle2 className="w-10 h-10" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-              Köszönjük a válaszodat!
+          <div className="p-10 border border-neutral-800 bg-neutral-950/80 backdrop-blur-sm text-center space-y-4">
+            <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 block">
+              STATUS // RÖGZÍTVE
+            </span>
+            <h2 className="font-editorial text-3xl font-normal text-white italic">
+              A válaszod rögzítésre került
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              A válaszod sikeresen rögzítésre került. Figyeld a kivetítőt, és várd meg a következő kérdést!
+            <div className="w-6 h-[1px] bg-neutral-700 mx-auto my-3" />
+            <p className="font-technical text-xs text-neutral-400 tracking-wider uppercase">
+              Kövesd a kivetítőt a valós idejű eredményekhez
             </p>
           </div>
         ) : !votingOpen ? (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 text-center space-y-4">
-            <div className="w-16 h-16 bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-2xl mx-auto flex items-center justify-center">
-              <Lock className="w-8 h-8" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-              A szavazás jelenleg zárva van
+          <div className="p-10 border border-neutral-800 bg-neutral-950/80 text-center space-y-3">
+            <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 block">
+              STATUS // LEZÁRVA
+            </span>
+            <h2 className="font-editorial text-3xl font-normal text-neutral-300 italic">
+              A szavazás jelenleg zárva
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Az előadó pillanatnyilag lezárta erre a kérdésre a válaszadást.
+            <p className="font-technical text-xs text-neutral-500 uppercase tracking-wider">
+              Az előadó felfüggesztette a válaszadást erre a kérdésre
             </p>
           </div>
         ) : (
-          /* Question Form by Type */
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-700/80">
+          <div className="p-6 sm:p-8 border border-neutral-800 bg-neutral-950/70 backdrop-blur-sm relative">
+            {/* Corner marks */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-neutral-600 -translate-x-[1px] -translate-y-[1px]" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neutral-600 translate-x-[1px] -translate-y-[1px]" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neutral-600 -translate-x-[1px] translate-y-[1px]" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-neutral-600 translate-x-[1px] translate-y-[1px]" />
+
             {activeQuestion.type === 'wordcloud' && (
               <WordCloudInput onSubmit={handleSubmit} submitting={submitting} />
             )}
@@ -169,8 +183,9 @@ export default function ParticipantView() {
         )}
       </main>
 
-      <footer className="text-center py-4 text-xs text-slate-400">
-        Vélemény &bull; Valós idejű visszajelzés
+      <footer className="flex justify-between items-center font-technical text-[9px] uppercase tracking-[0.2em] text-neutral-600 pt-4 border-t border-neutral-900">
+        <span>VÉLEMÉNY</span>
+        <span>ID: {participantId.substring(0, 10)}</span>
       </footer>
     </div>
   );
