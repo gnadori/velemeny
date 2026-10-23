@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Admin check helper
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'nadorig@gmail.com';
+    }
+
+    // Active session status
+    match /sessions/{sessionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Questions library
+    match /questions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Responses from participants
+    match /responses/{responseId} {
+      allow read: if true;
+      // Allow participant to submit response (create or update their own answer)
+      allow create, update: if true;
+      // Only admin can bulk delete or reset responses
+      allow delete: if isAdmin();
+    }
+  }
+}
