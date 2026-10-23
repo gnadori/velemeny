@@ -13,6 +13,7 @@ import Grid2x2Input from '../components/participant/Grid2x2Input';
 export default function ParticipantView() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [permissionError, setPermissionError] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -20,10 +21,19 @@ export default function ParticipantView() {
 
   // Listen to active session
   useEffect(() => {
-    const unsubSession = onSnapshot(doc(db, 'sessions', 'active'), (snap) => {
-      setSession(snap.exists() ? snap.data() : null);
-      setLoading(false);
-    });
+    const unsubSession = onSnapshot(
+      doc(db, 'sessions', 'active'),
+      (snap) => {
+        setSession(snap.exists() ? snap.data() : null);
+        setPermissionError(false);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Participant session snapshot error:', error);
+        setPermissionError(true);
+        setLoading(false);
+      }
+    );
 
     return () => unsubSession();
   }, []);
@@ -39,6 +49,9 @@ export default function ParticipantView() {
       doc(db, 'responses', `${session.activeQuestion.id}_${participantId}`),
       (snap) => {
         setHasVoted(snap.exists());
+      },
+      (error) => {
+        console.error('Participant vote check error:', error);
       }
     );
 
@@ -60,7 +73,7 @@ export default function ParticipantView() {
       setHasVoted(true);
     } catch (err) {
       console.error('Error submitting response:', err);
-      alert('Hiba történt a válasz mentésekor.');
+      alert('Hiba történt a válasz mentésekor: ' + (err.message || 'Hálózati vagy jogosultsági hiba'));
     } finally {
       setSubmitting(false);
     }
@@ -69,7 +82,33 @@ export default function ParticipantView() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-neutral-400 font-technical text-xs tracking-[0.25em] uppercase">
-        <span className="animate-pulse">[ BETÖLTÉS... ]</span>
+        <span className="animate-pulse">[ CSATLAKOZÁS FOLYAMATBAN... ]</span>
+      </div>
+    );
+  }
+
+  // Permission error in Firestore rules
+  if (permissionError) {
+    return (
+      <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#09090b] text-neutral-300 bg-grid-technical">
+        <header className="flex justify-between items-baseline font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500 border-b border-neutral-900 pb-4">
+          <span>VÉLEMÉNY // ARCHÍVUM</span>
+          <span>STATUS: JOGOSULTSÁG</span>
+        </header>
+
+        <main className="max-w-md w-full mx-auto text-center space-y-6 my-auto py-12">
+          <div className="w-8 h-[1px] bg-red-600 mx-auto" />
+          <h2 className="font-editorial text-3xl sm:text-4xl font-normal text-white italic tracking-tight">
+            Firestore jogosultsági beállítás szükséges
+          </h2>
+          <p className="font-sans text-xs text-neutral-400 font-light leading-relaxed">
+            A Firebase Firestore adatbázis jelenleg csak bejelentkezett felhasználóknak engedélyezi az olvasást. A nyilvános szavazáshoz közzé kell tenni a biztonsági szabályokat a Firebase Console-ban.
+          </p>
+        </main>
+
+        <footer className="text-center font-technical text-[9px] uppercase tracking-[0.2em] text-neutral-600 pt-4 border-t border-neutral-900">
+          FIRESTORE PERMISSION DENIED
+        </footer>
       </div>
     );
   }
@@ -155,7 +194,6 @@ export default function ParticipantView() {
           </div>
         ) : (
           <div className="p-6 sm:p-8 border border-neutral-800 bg-neutral-950/70 backdrop-blur-sm relative">
-            {/* Corner marks */}
             <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-neutral-600 -translate-x-[1px] -translate-y-[1px]" />
             <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neutral-600 translate-x-[1px] -translate-y-[1px]" />
             <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neutral-600 -translate-x-[1px] translate-y-[1px]" />

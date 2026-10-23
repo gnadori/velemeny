@@ -19,9 +19,15 @@ export default function PresenterView() {
   const joinUrl = window.location.origin + window.location.pathname;
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'sessions', 'active'), (snap) => {
-      setSession(snap.exists() ? snap.data() : null);
-    });
+    const unsub = onSnapshot(
+      doc(db, 'sessions', 'active'),
+      (snap) => {
+        setSession(snap.exists() ? snap.data() : null);
+      },
+      (error) => {
+        console.error('Presenter session snapshot error:', error);
+      }
+    );
     return () => unsub();
   }, []);
 
@@ -33,10 +39,16 @@ export default function PresenterView() {
     }
 
     const q = query(collection(db, 'responses'), where('questionId', '==', qId));
-    const unsub = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      setResponses(docs);
-    });
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        setResponses(docs);
+      },
+      (error) => {
+        console.error('Presenter responses query error:', error);
+      }
+    );
 
     return () => unsub();
   }, [session?.activeQuestion?.id]);
