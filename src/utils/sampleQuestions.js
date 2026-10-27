@@ -24,9 +24,16 @@ export const SAMPLE_QUESTIONS = [
   {
     title: "Mennyire volt hasznos és inspiráló a mai nap számodra?",
     type: "rating",
-    description: "Értékeld 1-től 5-ig terjedő skálán!",
+    description: "Értékeld 1-től 5-ig terjedő csillagos skálán!",
     scaleMax: 5,
     ratingIcon: "stars",
+  },
+  {
+    title: "Hány százalékban érzed megvalósíthatónak a felvázolt célokat?",
+    type: "rating",
+    description: "Állítsd be a csúszkán 0 és 100% között!",
+    scaleMax: 100,
+    ratingIcon: "numbers",
   },
   {
     title: "Oszd el a 100 pontot az alábbi fejlesztési prioritások között!",

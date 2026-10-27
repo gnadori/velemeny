@@ -2,29 +2,30 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Admin check helper
+    // Engedélyezett adminisztrátori e-mail címek
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'nadorig@gmail.com';
+      return request.auth != null && (
+        request.auth.token.email == 'nadorig@gmail.com' ||
+        request.auth.token.email == 'prievarat@gmail.com'
+      );
     }
 
-    // Active session status
+    // Aktív szoba állapota: bárki olvashatja, csak adminisztrátor írhatja
     match /sessions/{sessionId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Questions library
+    // Kérdésgyűjtemény: bárki olvashatja, csak adminisztrátor szerkesztheti
     match /questions/{questionId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Responses from participants
+    // Válaszok: bárki beküldhet (telefonról is), törölni csak adminisztrátor tudja
     match /responses/{responseId} {
       allow read: if true;
-      // Allow participant to submit response (create or update their own answer)
       allow create, update: if true;
-      // Only admin can bulk delete or reset responses
       allow delete: if isAdmin();
     }
   }

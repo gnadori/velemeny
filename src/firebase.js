@@ -15,4 +15,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
-export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || "nadorig@gmail.com";
+
+export const ADMIN_EMAILS = ['nadorig@gmail.com', 'prievarat@gmail.com'];
+export const isAdminEmail = (email) => !!email && ADMIN_EMAILS.includes(email.toLowerCase());
+export const ADMIN_EMAIL = ADMIN_EMAILS[0];

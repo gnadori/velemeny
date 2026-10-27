@@ -12,7 +12,7 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 | :--- | :--- | :--- | :--- |
 | **Résztvevői felület** | `https://gnadori.github.io/velemeny/` | Közönség / Diákok mobilon | **NEM szükséges** (anonim, azonnali) |
 | **Kivetítő nézet** | `https://gnadori.github.io/velemeny/#/present` | Projektor / Nagyképernyő | **NEM szükséges** (vetítésre optimalizált) |
-| **Adminisztrátori felület** | `https://gnadori.github.io/velemeny/#/admin` | Kizárólag az előadó | **Google fiók** (`nadorig@gmail.com`) |
+| **Adminisztrátori felület** | `https://gnadori.github.io/velemeny/#/admin` | Kizárólag az előadók | **Google fiók** (`nadorig@gmail.com`, `prievarat@gmail.com`) |
 
 ---
 
@@ -22,14 +22,14 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 1. Nyisd meg a laptopodon a `/#/admin` címet:  
    👉 **`https://gnadori.github.io/velemeny/#/admin`**
 2. Kattints a **`[ BELÉPÉS GOOGLE FIÓKKAL ]`** gombra.
-3. Válaszd ki a `nadorig@gmail.com` címedet.  
+3. Jelentkezz be a `nadorig@gmail.com` vagy a `prievarat@gmail.com` Google fiókoddal.  
    *(Biztonsági okokból más Google fiókkal nem enged belépni a rendszer).*
 
 ### 2. Kérdéssor előkészítése
 - **Mintakérdések betöltése (Első alkalommal):**  
-  Ha a kérdéstár üres, kattints a **`[ MINTAKÉRDÉSEK BETÖLTÉSE ]`** gombra, és mind a 6 kérdéstípusból azonnal betölt egy-egy kipróbálható mintát.
+  Ha a kérdéstár üres, kattints a **`[ MINTAKÉRDÉSEK BETÖLTÉSE ]`** gombra, és az összes kérdéstípusból azonnal betölt egy-egy kipróbálható mintát (beleértve a csillagos és a 0-100%-os skálát is).
 - **Új kérdés létrehozása:**  
-  Kattints a **`[ + ÚJ KÉRDÉS ]`** gombra. Válaszd ki a típust, írd be a kérdés szövegét, az opcionális leírást, és add meg a típushoz tartozó speciális beállításokat (pl. válaszlehetőségek, skála mérete és ikonja, tengelyek feliratai).
+  Kattints a **`[ + ÚJ KÉRDÉS ]`** gombra. Válaszd ki a típust, írd be a kérdés szövegét, az opcionális leírást, és add meg a típushoz tartozó beállításokat.
 - **Kérdés törlése:**  
   A listában a kérdés mellett lévő **`[ X ]`** gombbal bármelyik kérdés törölhető az archívumból.
 
@@ -39,9 +39,8 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 3. Nyomd meg az **F11** billentyűt vagy kattints a jobb felső sarokban a **`[ ⤢ ]`** (teljes képernyő) ikonra.
 
 ### 4. Közönség csatlakozása
-- A kivetítő képernyőjén automatikusan látható a **nagy méretű QR-kód** és a webcím.
-- Ha a kérdés indítása előtt a résztvevők még a QR-kódot olvassák be a telefonjuk kamerájával, a telefonjukon megjelenik:  
-  *„Várakozás az indításra — Az előadó hamarosan elindítja a következő kérdést.”*
+- A kivetítő képernyőjén automatikusan látható a **nagy méretű QR-kód** és a webcím (`https://gnadori.github.io/velemeny/`).
+- Amikor a résztvevők beolvassák a kódot a telefonjuk kamerájával, azonnal a szavazófelületre érkeznek.
 - Ha menet közben bárki lemaradna, a vetítő jobb felső sarkában lévő **`[ QR KÓD ]`** gombra kattintva bármikor felugrasztható a csatlakozási kód.
 
 ### 5. Prezentáció vezérlése (Kérdések indítása és szavazás)
@@ -70,13 +69,17 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 - **Résztvevő:** Szabadszavas szövegmező karakterszámlálóval (max. 300 karakter).
 - **Kivetítő:** Reszponzív üzenőfal minimalista archívum-kártyákkal.
 
-### 4. Pontozás & Értékelés (`rating`) — *Testreszabható skála és szimbólumok*
-- **Skála beállítása:** Nemcsak 1–5, hanem **szabadon választható 2-től 10-ig bármilyen maximum** (pl. 1–3, 1–7 vagy 1–10).
-- **Választható szimbólumok:**
-  - **Csillagok (★):** Interaktív aranyszínű csillagok, amelyek a telefonon érintésre világítanak.
-  - **Szívecskék (♥):** Piros szívek finom fénnyel.
+### 4. Pontozás & Értékelés (`rating`) — *Skála 1–10-ig vagy akár 100-ig / %-ig*
+- **1 és 10 közötti skála (pl. 1–5, 1–7 vagy 1–10):**
+  - **Csillagok (★):** Interaktív aranyszínű csillagok érintésre kitöltéssel.
+  - **Szívecskék (♥):** Piros szívecskék finom fénnyel.
   - **Számok (#):** Letisztult számozott gombok.
-- **Kivetítő:** Kiemelt nagyméretű átlagpontszám (pl. `4.82 / 5.00`) a választott szimbólummal, valamint szintenkénti százalékos eloszlás.
+  - A kivetítőn a nagyméretű átlag mellett szintenkénti százalékos bontás látható.
+- **10 feletti skála (pl. 0–100% vagy tetszőleges szám):**
+  - Ideális olyan kérdésekhez, mint pl. *„Hány %-ban igaz az állítás?”* vagy *„Mekkora valószínűséggel javasolnád?”*.
+  - A résztvevő egy **érintésbarát csúszkával és +/- léptetőkkel** (100-as skálánál gyorsgombokkal: 0%, 25%, 50%, 75%, 100%) állíthatja be a pontos értéket.
+  - A csillag és szívecske szimbólumok ilyenkor automatikusan inaktívak a tiszta használhatóság érdekében.
+  - A kivetítőn a pontos átlag mellett egy **5 tartományos eloszlási hisztogram** jelenik meg (pl. 0–20%, 21–40% stb.), valamint a legalacsonyabb és legmagasabb leadott szavazat.
 
 ### 5. 100 pont elosztása (`points100`)
 - **Résztvevő:** Csúszkák és +/- léptetők segítségével kell elosztani pontosan 100 pontot az opciók között.
@@ -106,31 +109,34 @@ A nyelvváltás azonnal érvénybe lép minden feliratra, gombra, beviteli mező
 
 Az alkalmazás Firebase Firestore-t és Firebase Auth-ot használ. A résztvevőknek nem kell bejelentkezniük, de az Admin funkciók szigorúan védettek.
 
-A Firebase Console-ban a **Firestore Database > Rules** fülön a következő szabályoknak kell aktívnak lenniük:
+A Firebase Console-ban a **Firestore Database > Rules** fülön a következő szabályoknak kell aktívnak lenniük (tartalmazza a két engedélyezett címet):
 
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Csak a megadott e-mail cím kap adminisztrátori jogosultságot
+    // Engedélyezett adminisztrátori e-mail címek
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'nadorig@gmail.com';
+      return request.auth != null && (
+        request.auth.token.email == 'nadorig@gmail.com' ||
+        request.auth.token.email == 'prievarat@gmail.com'
+      );
     }
 
-    // Aktív szoba állapota: bárki olvashatja, csak admin írhatja
+    // Aktív szoba állapota: bárki olvashatja, csak adminisztrátor írhatja
     match /sessions/{sessionId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Kérdésbank: bárki olvashatja, csak admin szerkesztheti
+    // Kérdésgyűjtemény: bárki olvashatja, csak adminisztrátor szerkesztheti
     match /questions/{questionId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Válaszok: bárki beküldhet (telefonról is), törölni csak admin tudja
+    // Válaszok: bárki beküldhet (telefonról is), törölni csak adminisztrátor tudja
     match /responses/{responseId} {
       allow read: if true;
       allow create, update: if true;

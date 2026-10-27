@@ -17,7 +17,7 @@ import {
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore';
-import { auth, googleProvider, db, ADMIN_EMAIL } from '../firebase';
+import { auth, googleProvider, db, isAdminEmail, ADMIN_EMAILS } from '../firebase';
 import { SAMPLE_QUESTIONS } from '../utils/sampleQuestions';
 
 const TYPE_CONFIG = {
@@ -59,7 +59,7 @@ export default function AdminView() {
 
   // Listen to questions list
   useEffect(() => {
-    if (!user || user.email !== ADMIN_EMAIL) return;
+    if (!user || !isAdminEmail(user.email)) return;
 
     const unsub = onSnapshot(collection(db, 'questions'), (snapshot) => {
       const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -71,7 +71,7 @@ export default function AdminView() {
 
   // Listen to active session
   useEffect(() => {
-    if (!user || user.email !== ADMIN_EMAIL) return;
+    if (!user || !isAdminEmail(user.email)) return;
 
     const unsub = onSnapshot(doc(db, 'sessions', 'active'), (snap) => {
       setSession(snap.exists() ? snap.data() : null);
@@ -214,8 +214,9 @@ export default function AdminView() {
       }
 
       if (newType === 'rating') {
-        qData.scaleMax = Math.min(10, Math.max(2, Number(newScaleMax) || 5));
-        qData.ratingIcon = newRatingIcon;
+        const val = Math.max(2, Math.min(1000, Number(newScaleMax) || 5));
+        qData.scaleMax = val;
+        qData.ratingIcon = val > 10 ? 'numbers' : newRatingIcon;
       }
 
       if (newType === 'grid2x2') {
@@ -274,7 +275,7 @@ export default function AdminView() {
   }
 
   // Different email logged in
-  if (user.email !== ADMIN_EMAIL) {
+  if (!isAdminEmail(user.email)) {
     return (
       <div className="min-h-screen bg-[#09090b] text-neutral-200 bg-grid-technical flex flex-col justify-center items-center p-6">
         <div className="max-w-md w-full border border-red-900/50 bg-neutral-950/90 p-10 text-center space-y-6 shadow-2xl">
@@ -289,7 +290,7 @@ export default function AdminView() {
               Aktív profil: <span className="text-white">{user.email}</span>
             </p>
             <p className="font-technical text-[10px] text-neutral-500 uppercase tracking-widest mt-3">
-              Kizárólag: {ADMIN_EMAIL}
+              Engedélyezett fiókok: {ADMIN_EMAILS.join(', ')}
             </p>
           </div>
           <button
@@ -622,23 +623,46 @@ export default function AdminView() {
                 <div className="space-y-4">
                   <div>
                     <label className="block font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-400 mb-1.5">
-                      Skála maximuma (1-től max. 10-ig)
+                      Skála maximuma (akár 100 vagy tetszőleges szám)
                     </label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                    <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                      {[3, 5, 7, 10, 20, 50, 100].map((num) => (
                         <button
                           type="button"
                           key={num}
-                          onClick={() => setNewScaleMax(num)}
-                          className={`w-9 h-9 border font-technical text-xs transition cursor-pointer ${
+                          onClick={() => {
+                            setNewScaleMax(num);
+                            if (num > 10) setNewRatingIcon('numbers');
+                          }}
+                          className={`px-2.5 py-1.5 border font-technical text-xs transition cursor-pointer ${
                             newScaleMax === num
                               ? 'bg-white text-black border-white font-bold'
                               : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-600'
                           }`}
                         >
-                          {num}
+                          {num === 100 ? '100 (%)' : num}
                         </button>
                       ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-technical text-xs text-neutral-500">Egyéni maximum:</span>
+                      <input
+                        type="number"
+                        min="2"
+                        max="1000"
+                        value={newScaleMax}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setNewScaleMax(val);
+                          if (val > 10) setNewRatingIcon('numbers');
+                        }}
+                        className="w-24 px-3 py-1.5 bg-neutral-900 border border-neutral-700 text-white font-technical text-xs focus:outline-none focus:border-white"
+                      />
+                      {newScaleMax === 100 && (
+                        <span className="font-technical text-[10px] text-neutral-400">
+                          (pl. 0 - 100% skála)
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -646,41 +670,47 @@ export default function AdminView() {
                     <label className="block font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-400 mb-1.5">
                       Értékelési szimbólum
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setNewRatingIcon('stars')}
-                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                          newRatingIcon === 'stars'
-                            ? 'bg-white text-black border-white font-bold'
-                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
-                        }`}
-                      >
-                        <span className="text-amber-400">★</span> Csillag
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNewRatingIcon('hearts')}
-                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                          newRatingIcon === 'hearts'
-                            ? 'bg-white text-black border-white font-bold'
-                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
-                        }`}
-                      >
-                        <span className="text-rose-500">♥</span> Szívecske
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNewRatingIcon('numbers')}
-                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                          newRatingIcon === 'numbers'
-                            ? 'bg-white text-black border-white font-bold'
-                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
-                        }`}
-                      >
-                        <span>#</span> Számok
-                      </button>
-                    </div>
+                    {newScaleMax > 10 ? (
+                      <div className="p-3 border border-neutral-800 bg-neutral-900/60 font-technical text-xs text-neutral-400">
+                        [ 10 FELETTI SKÁLÁNÁL CSÚSZKA ÉS NUMERIKUS BEVITEL MŰKÖDIK — CSILLAG ÉS SZÍV 10-IG ÉRHETŐ EL ]
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setNewRatingIcon('stars')}
+                          className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                            newRatingIcon === 'stars'
+                              ? 'bg-white text-black border-white font-bold'
+                              : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                          }`}
+                        >
+                          <span className="text-amber-400">★</span> Csillag
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewRatingIcon('hearts')}
+                          className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                            newRatingIcon === 'hearts'
+                              ? 'bg-white text-black border-white font-bold'
+                              : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                          }`}
+                        >
+                          <span className="text-rose-500">♥</span> Szívecske
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewRatingIcon('numbers')}
+                          className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                            newRatingIcon === 'numbers'
+                              ? 'bg-white text-black border-white font-bold'
+                              : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                          }`}
+                        >
+                          <span>#</span> Számok
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

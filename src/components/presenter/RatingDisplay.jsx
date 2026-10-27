@@ -2,28 +2,80 @@ import React, { useMemo } from 'react';
 import { Star, Heart } from 'lucide-react';
 
 export default function RatingDisplay({ question, responses, t }) {
-  const maxScale = Math.min(10, Math.max(2, Number(question.scaleMax) || 5));
-  const iconType = question.ratingIcon || 'stars'; // 'stars' | 'hearts' | 'numbers'
+  const maxScale = Math.max(2, Number(question.scaleMax) || 5);
+  const isSlider = maxScale > 10;
+  const iconType = isSlider ? 'numbers' : (question.ratingIcon || 'stars'); // 'stars' | 'hearts' | 'numbers'
 
-  const { average, count, distribution } = useMemo(() => {
-    const dist = {};
-    for (let i = 1; i <= maxScale; i++) dist[i] = 0;
-
+  const { average, count, distribution, buckets, minVal, maxVal } = useMemo(() => {
     let sum = 0;
     let validCount = 0;
+    let min = Infinity;
+    let max = -Infinity;
+
+    const values = [];
 
     responses.forEach(r => {
       const val = Number(r.value);
-      if (!isNaN(val) && val >= 1 && val <= maxScale) {
-        dist[val] = (dist[val] || 0) + 1;
+      if (!isNaN(val) && val >= 0 && val <= maxScale) {
         sum += val;
         validCount++;
+        values.push(val);
+        if (val < min) min = val;
+        if (val > max) max = val;
       }
     });
 
-    const avg = validCount > 0 ? (sum / validCount).toFixed(2) : '0.00';
-    return { average: avg, count: validCount, distribution: dist };
-  }, [responses, maxScale]);
+    const avg = validCount > 0 ? (sum / validCount).toFixed(1) : '0.0';
+
+    if (isSlider) {
+      // 5 distribution ranges for scale > 10
+      const bucketCount = 5;
+      const step = maxScale / bucketCount;
+      const bucketList = Array.from({ length: bucketCount }, (_, i) => {
+        const from = Math.round(i * step);
+        const to = Math.round((i + 1) * step);
+        return {
+          from,
+          to,
+          label: `${from} – ${to}${maxScale === 100 ? '%' : ''}`,
+          count: 0
+        };
+      });
+
+      values.forEach(v => {
+        const idx = Math.min(bucketCount - 1, Math.floor(v / step));
+        bucketList[idx].count++;
+      });
+
+      return {
+        average: avg,
+        count: validCount,
+        distribution: {},
+        buckets: bucketList,
+        minVal: validCount > 0 ? min : 0,
+        maxVal: validCount > 0 ? max : 0
+      };
+    } else {
+      // 1..maxScale individual distribution
+      const dist = {};
+      for (let i = 1; i <= maxScale; i++) dist[i] = 0;
+
+      values.forEach(val => {
+        if (dist[val] !== undefined) {
+          dist[val]++;
+        }
+      });
+
+      return {
+        average: avg,
+        count: validCount,
+        distribution: dist,
+        buckets: [],
+        minVal: 0,
+        maxVal: 0
+      };
+    }
+  }, [responses, maxScale, isSlider]);
 
   return (
     <div className="w-full max-w-4xl mx-auto p-8 sm:p-12 border border-neutral-800 bg-neutral-950/60 backdrop-blur-sm relative flex flex-col md:flex-row items-center gap-10">
@@ -41,6 +93,9 @@ export default function RatingDisplay({ question, responses, t }) {
           <span className="text-6xl sm:text-7xl font-extrabold text-white tracking-tight">
             {average}
           </span>
+          {maxScale === 100 && (
+            <span className="text-2xl font-technical text-neutral-400 font-bold">%</span>
+          )}
           {iconType === 'stars' && (
             <Star className="w-9 h-9 fill-amber-400 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]" />
           )}
@@ -57,45 +112,76 @@ export default function RatingDisplay({ question, responses, t }) {
         </span>
       </div>
 
-      {/* Right side: Precision Breakdown */}
-      <div className="flex-1 w-full space-y-2.5 font-technical text-xs max-h-[360px] overflow-y-auto pr-1">
-        {Array.from({ length: maxScale }, (_, i) => maxScale - i).map(score => {
-          const voteCount = distribution[score] || 0;
-          const percentage = count > 0 ? Math.round((voteCount / count) * 100) : 0;
+      {/* Right side: Distribution */}
+      {isSlider ? (
+        /* Histogram / Range distribution for scale > 10 */
+        <div className="flex-1 w-full space-y-4 font-technical text-xs">
+          <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-neutral-500 pb-1 border-b border-neutral-900">
+            <span>TARTOMÁNY</span>
+            <span>MIN: {minVal} // MAX: {maxVal}</span>
+          </div>
 
-          return (
-            <div key={score} className="space-y-1">
-              <div className="flex justify-between items-center text-neutral-400 text-[11px]">
-                <span className="tracking-wider flex items-center gap-1.5">
-                  <span className="text-neutral-200 font-bold">{String(score).padStart(2, '0')}</span>
-                  {iconType === 'stars' && (
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  )}
-                  {iconType === 'hearts' && (
-                    <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-                  )}
-                  {iconType === 'numbers' && (
-                    <span className="text-neutral-500">[{t?.scale_label || 'SKÁLA'}]</span>
-                  )}
-                </span>
-                <span className="text-neutral-500">{voteCount} ({percentage}%)</span>
+          <div className="space-y-3">
+            {buckets.map((b, idx) => {
+              const percentage = count > 0 ? Math.round((b.count / count) * 100) : 0;
+              return (
+                <div key={idx} className="space-y-1">
+                  <div className="flex justify-between items-center text-neutral-400 text-[11px]">
+                    <span className="tracking-wider text-neutral-200">{b.label}</span>
+                    <span className="text-neutral-500">{b.count} ({percentage}%)</span>
+                  </div>
+                  <div className="w-full h-2 bg-neutral-900 border border-neutral-800/80 overflow-hidden">
+                    <div
+                      className="h-full bg-white transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        /* Standard 1..scaleMax breakdown for scale <= 10 */
+        <div className="flex-1 w-full space-y-2.5 font-technical text-xs max-h-[360px] overflow-y-auto pr-1">
+          {Array.from({ length: maxScale }, (_, i) => maxScale - i).map(score => {
+            const voteCount = distribution[score] || 0;
+            const percentage = count > 0 ? Math.round((voteCount / count) * 100) : 0;
+
+            return (
+              <div key={score} className="space-y-1">
+                <div className="flex justify-between items-center text-neutral-400 text-[11px]">
+                  <span className="tracking-wider flex items-center gap-1.5">
+                    <span className="text-neutral-200 font-bold">{String(score).padStart(2, '0')}</span>
+                    {iconType === 'stars' && (
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    )}
+                    {iconType === 'hearts' && (
+                      <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                    )}
+                    {iconType === 'numbers' && (
+                      <span className="text-neutral-500">[{t?.scale_label || 'SKÁLA'}]</span>
+                    )}
+                  </span>
+                  <span className="text-neutral-500">{voteCount} ({percentage}%)</span>
+                </div>
+                <div className="w-full h-1.5 bg-neutral-900 border border-neutral-800/80 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      iconType === 'hearts'
+                        ? 'bg-rose-500'
+                        : iconType === 'stars'
+                        ? 'bg-amber-400'
+                        : 'bg-white'
+                    }`}
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full h-1.5 bg-neutral-900 border border-neutral-800/80 overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-500 ${
-                    iconType === 'hearts'
-                      ? 'bg-rose-500'
-                      : iconType === 'stars'
-                      ? 'bg-amber-400'
-                      : 'bg-white'
-                  }`}
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
