@@ -4,10 +4,7 @@ service cloud.firestore {
     
     // Engedélyezett adminisztrátori e-mail címek
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.email == 'nadorig@gmail.com' ||
-        request.auth.token.email == 'prievarat@gmail.com'
-      );
+      return request.auth != null && request.auth.token.email in ['nadorig@gmail.com', 'prievarat@gmail.com'];
     }
 
     // Aktív szoba állapota: bárki olvashatja, csak adminisztrátor írhatja
