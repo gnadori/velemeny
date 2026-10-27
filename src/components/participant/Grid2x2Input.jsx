@@ -29,10 +29,10 @@ export default function Grid2x2Input({ question, onSubmit, submitting, t }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md mx-auto">
-      {/* 2D Grid with Y-axis on the left */}
-      <div className="flex items-center gap-2.5 sm:gap-3 justify-center w-full">
-        {/* Left (Y) Axis */}
+    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md mx-auto flex flex-col items-center">
+      {/* 2D Grid with 2-Column Layout */}
+      <div className="inline-grid grid-cols-[auto_280px] sm:grid-cols-[auto_320px] gap-x-2.5 sm:gap-x-3 items-center">
+        {/* Row 1, Col 1: Left (Y) Axis */}
         <div className="flex flex-col items-center justify-between h-[280px] sm:h-[320px] py-1 font-technical text-[9px] text-neutral-400 select-none">
           <span className="uppercase tracking-widest text-[8px] text-neutral-500">[ MAX ]</span>
           <div className="flex items-center gap-1.5 -rotate-90 origin-center whitespace-nowrap uppercase tracking-widest font-bold text-neutral-300">
@@ -42,11 +42,11 @@ export default function Grid2x2Input({ question, onSubmit, submitting, t }) {
           <span className="uppercase tracking-widest text-[8px] text-neutral-500">[ MIN ]</span>
         </div>
 
-        {/* The Grid Canvas */}
+        {/* Row 1, Col 2: The Grid Canvas */}
         <div
           ref={gridRef}
           onClick={handleGridClick}
-          className="relative w-full aspect-square max-w-[280px] sm:max-w-[320px] bg-neutral-900 border border-neutral-700 overflow-hidden cursor-crosshair touch-none select-none shadow-xl"
+          className="relative w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] bg-neutral-900 border border-neutral-700 overflow-hidden cursor-crosshair touch-none select-none shadow-xl"
         >
           {/* Subtle Quadrant borders */}
           <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 pointer-events-none">
@@ -76,17 +76,20 @@ export default function Grid2x2Input({ question, onSubmit, submitting, t }) {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Bottom (X) Axis */}
-      <div className="flex flex-col items-center gap-1 w-full max-w-[280px] sm:max-w-[320px] mx-auto ml-6 sm:ml-7 font-technical">
-        <div className="flex justify-between w-full text-[8px] text-neutral-500 uppercase tracking-widest">
-          <span>[ MIN ]</span>
-          <span>[ MAX ]</span>
-        </div>
-        <div className="font-bold tracking-widest uppercase text-neutral-200 text-xs flex items-center gap-1.5">
-          <span>{axisX}</span>
-          <span>→</span>
+        {/* Row 2, Col 1: Empty placeholder cell */}
+        <div />
+
+        {/* Row 2, Col 2: Bottom (X) Axis directly and exactly under Canvas */}
+        <div className="mt-2.5 flex flex-col items-center gap-1 w-[280px] sm:w-[320px] font-technical">
+          <div className="flex justify-between w-full text-[8px] text-neutral-500 uppercase tracking-widest">
+            <span>[ MIN ]</span>
+            <span>[ MAX ]</span>
+          </div>
+          <div className="font-bold tracking-widest uppercase text-neutral-200 text-xs flex items-center gap-1.5">
+            <span>{axisX}</span>
+            <span>→</span>
+          </div>
         </div>
       </div>
 
