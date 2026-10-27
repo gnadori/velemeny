@@ -24,7 +24,7 @@ export const translations = {
     char_counter: 'KARAKTER',
     word_placeholder: 'Kifejezés',
     text_placeholder: 'Fogalmazd meg a gondolatodat...',
-    scale_select: 'VÁLASSZ EGY ÉRTÉKET A SKÁLÁN',
+    scale_select: 'VÁLASSZ ÉRTÉKET A SKÁLÁN',
     scale_selected: 'KIVÁLASZTVA',
     points_status_ready: 'STATUS // KÉSZ A BEKÜLDÉSRE',
     points_status_exact: 'PONTOSAN 100 PONT',
@@ -37,6 +37,11 @@ export const translations = {
     permission_error_title: 'Firestore jogosultsági beállítás szükséges',
     permission_error_desc: 'A Firestore szabályok nincsenek még közzétéve a Firebase Console-ban.',
     connecting: 'CSATLAKOZÁS FOLYAMATBAN...',
+    rating_icon_type: 'Értékelés szimbóluma',
+    icon_stars: 'Csillagok',
+    icon_hearts: 'Szívecskék',
+    icon_numbers: 'Számok',
+    scale_max_label: 'Skála maximuma (2 - 10)',
 
     // Presenter View
     presenter_title: 'VÉLEMÉNY',
@@ -99,6 +104,11 @@ export const translations = {
     permission_error_title: 'Firestore permission configuration required',
     permission_error_desc: 'Firestore rules have not been published in the Firebase Console yet.',
     connecting: 'CONNECTING...',
+    rating_icon_type: 'Rating symbol',
+    icon_stars: 'Stars',
+    icon_hearts: 'Hearts',
+    icon_numbers: 'Numbers',
+    scale_max_label: 'Scale maximum (2 - 10)',
 
     // Presenter View
     presenter_title: 'VELEMENY',
@@ -161,6 +171,11 @@ export const translations = {
     permission_error_title: 'Configurare permisiuni Firestore necesară',
     permission_error_desc: 'Regulile Firestore nu au fost încă publicate în Firebase Console.',
     connecting: 'SE CONECTEAZĂ...',
+    rating_icon_type: 'Simbol evaluare',
+    icon_stars: 'Stele',
+    icon_hearts: 'Inimi',
+    icon_numbers: 'Numere',
+    scale_max_label: 'Maxim scară (2 - 10)',
 
     // Presenter View
     presenter_title: 'VELEMENY',

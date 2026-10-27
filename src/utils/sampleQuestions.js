@@ -26,6 +26,7 @@ export const SAMPLE_QUESTIONS = [
     type: "rating",
     description: "Értékeld 1-től 5-ig terjedő skálán!",
     scaleMax: 5,
+    ratingIcon: "stars",
   },
   {
     title: "Oszd el a 100 pontot az alábbi fejlesztési prioritások között!",

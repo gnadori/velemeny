@@ -44,6 +44,7 @@ export default function AdminView() {
   const [newType, setNewType] = useState('wordcloud');
   const [newOptions, setNewOptions] = useState(['', '']);
   const [newScaleMax, setNewScaleMax] = useState(5);
+  const [newRatingIcon, setNewRatingIcon] = useState('stars'); // 'stars' | 'hearts' | 'numbers'
   const [newAxisX, setNewAxisX] = useState('Ráfordítás (Alacsony → Magas)');
   const [newAxisY, setNewAxisY] = useState('Várható hatás (Kicsi → Óriási)');
 
@@ -213,7 +214,8 @@ export default function AdminView() {
       }
 
       if (newType === 'rating') {
-        qData.scaleMax = Number(newScaleMax) || 5;
+        qData.scaleMax = Math.min(10, Math.max(2, Number(newScaleMax) || 5));
+        qData.ratingIcon = newRatingIcon;
       }
 
       if (newType === 'grid2x2') {
@@ -227,6 +229,8 @@ export default function AdminView() {
       setNewDesc('');
       setNewType('wordcloud');
       setNewOptions(['', '']);
+      setNewScaleMax(5);
+      setNewRatingIcon('stars');
       setShowAddModal(false);
     } catch (err) {
       console.error(err);
@@ -442,6 +446,11 @@ export default function AdminView() {
                     <div className="flex items-center gap-3 font-technical text-[10px] text-neutral-500 uppercase tracking-widest">
                       <span>[ {String(idx + 1).padStart(2, '0')} ]</span>
                       <span>{typeMeta.label}</span>
+                      {q.type === 'rating' && (
+                        <span className="text-neutral-400">
+                          [ 1–{q.scaleMax || 5} {q.ratingIcon === 'hearts' ? '♥' : q.ratingIcon === 'numbers' ? '#' : '★'} ]
+                        </span>
+                      )}
                       {isRunning && (
                         <span className="text-white border border-white px-2 py-0.5">
                           [ AKTÍV VETÍTÉS ]
@@ -610,18 +619,69 @@ export default function AdminView() {
               )}
 
               {newType === 'rating' && (
-                <div>
-                  <label className="block font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-400 mb-1">
-                    Skála maximuma
-                  </label>
-                  <select
-                    value={newScaleMax}
-                    onChange={(e) => setNewScaleMax(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 text-white font-technical text-xs focus:outline-none"
-                  >
-                    <option value={5}>1 - 5 skála</option>
-                    <option value={10}>1 - 10 skála</option>
-                  </select>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-400 mb-1.5">
+                      Skála maximuma (1-től max. 10-ig)
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                        <button
+                          type="button"
+                          key={num}
+                          onClick={() => setNewScaleMax(num)}
+                          className={`w-9 h-9 border font-technical text-xs transition cursor-pointer ${
+                            newScaleMax === num
+                              ? 'bg-white text-black border-white font-bold'
+                              : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-600'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-400 mb-1.5">
+                      Értékelési szimbólum
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setNewRatingIcon('stars')}
+                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                          newRatingIcon === 'stars'
+                            ? 'bg-white text-black border-white font-bold'
+                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                        }`}
+                      >
+                        <span className="text-amber-400">★</span> Csillag
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewRatingIcon('hearts')}
+                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                          newRatingIcon === 'hearts'
+                            ? 'bg-white text-black border-white font-bold'
+                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                        }`}
+                      >
+                        <span className="text-rose-500">♥</span> Szívecske
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewRatingIcon('numbers')}
+                        className={`p-2.5 border font-technical text-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                          newRatingIcon === 'numbers'
+                            ? 'bg-white text-black border-white font-bold'
+                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600'
+                        }`}
+                      >
+                        <span>#</span> Számok
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
 
