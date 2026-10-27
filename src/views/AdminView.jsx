@@ -36,6 +36,7 @@ export default function AdminView() {
   const [questions, setQuestions] = useState([]);
   const [session, setSession] = useState(null);
   const [activeResponsesCount, setActiveResponsesCount] = useState(0);
+  const [filterMode, setFilterMode] = useState('mine'); // 'mine' | 'all'
 
   // New question form state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -172,6 +173,7 @@ export default function AdminView() {
       for (const sample of SAMPLE_QUESTIONS) {
         await addDoc(collection(db, 'questions'), {
           ...sample,
+          createdBy: user.email,
           createdAt: serverTimestamp()
         });
       }
@@ -202,6 +204,7 @@ export default function AdminView() {
         title: newTitle.trim(),
         description: newDesc.trim(),
         type: newType,
+        createdBy: user.email,
         createdAt: serverTimestamp()
       };
 
@@ -308,6 +311,10 @@ export default function AdminView() {
   const activeQ = session?.activeQuestion;
   const isVotingOpen = session?.votingOpen ?? true;
 
+  const isMine = (q) => q.createdBy === user.email || (!q.createdBy && user.email === 'nadorig@gmail.com');
+  const myQuestionsCount = questions.filter(isMine).length;
+  const displayedQuestions = questions.filter(q => filterMode === 'all' ? true : isMine(q));
+
   return (
     <div className="min-h-screen bg-[#09090b] text-neutral-100 bg-grid-technical flex flex-col">
       {/* Top Header */}
@@ -406,13 +413,39 @@ export default function AdminView() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-4 pb-4 border-b border-neutral-900">
             <div>
               <span className="font-technical text-[10px] uppercase tracking-[0.25em] text-neutral-500">
-                KATALÓGUS // {questions.length} TÉTEL
+                KATALÓGUS // {user.email} // {displayedQuestions.length} TÉTEL
               </span>
               <h2 className="text-2xl font-bold text-white tracking-tight">Kérdésgyűjtemény</h2>
             </div>
 
-            <div className="flex items-center gap-3 font-technical text-xs">
-              {questions.length === 0 && (
+            <div className="flex flex-wrap items-center gap-3 font-technical text-xs">
+              {/* Filter tabs: My Questions vs All */}
+              <div className="flex border border-neutral-800 p-0.5 bg-neutral-950">
+                <button
+                  type="button"
+                  onClick={() => setFilterMode('mine')}
+                  className={`px-3 py-1.5 transition cursor-pointer text-[10px] uppercase tracking-wider ${
+                    filterMode === 'mine'
+                      ? 'bg-white text-black font-bold'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  Saját ({myQuestionsCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterMode('all')}
+                  className={`px-3 py-1.5 transition cursor-pointer text-[10px] uppercase tracking-wider ${
+                    filterMode === 'all'
+                      ? 'bg-white text-black font-bold'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  Összes ({questions.length})
+                </button>
+              </div>
+
+              {displayedQuestions.length === 0 && (
                 <button
                   onClick={handleAddSampleQuestions}
                   className="px-3.5 py-2 border border-neutral-700 hover:border-neutral-500 bg-neutral-900 text-neutral-200 uppercase tracking-wider cursor-pointer"
@@ -430,7 +463,7 @@ export default function AdminView() {
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {questions.map((q, idx) => {
+            {displayedQuestions.map((q, idx) => {
               const isRunning = activeQ?.id === q.id;
               const typeMeta = TYPE_CONFIG[q.type] || TYPE_CONFIG.wordcloud;
 
@@ -444,12 +477,17 @@ export default function AdminView() {
                   }`}
                 >
                   <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center gap-3 font-technical text-[10px] text-neutral-500 uppercase tracking-widest">
+                    <div className="flex items-center gap-3 font-technical text-[10px] text-neutral-500 uppercase tracking-widest flex-wrap">
                       <span>[ {String(idx + 1).padStart(2, '0')} ]</span>
                       <span>{typeMeta.label}</span>
                       {q.type === 'rating' && (
                         <span className="text-neutral-400">
-                          [ 1–{q.scaleMax || 5} {q.ratingIcon === 'hearts' ? '♥' : q.ratingIcon === 'numbers' ? '#' : '★'} ]
+                          [ 1–{q.scaleMax || 5} {q.scaleMax > 10 ? (q.scaleMax === 100 ? '%' : '#') : (q.ratingIcon === 'hearts' ? '♥' : q.ratingIcon === 'numbers' ? '#' : '★')} ]
+                        </span>
+                      )}
+                      {filterMode === 'all' && (
+                        <span className="text-neutral-500 border border-neutral-800 px-1.5 py-0.5">
+                          SZERZŐ: {q.createdBy ? q.createdBy.split('@')[0] : 'nadorig'}
                         </span>
                       )}
                       {isRunning && (

@@ -25,9 +25,10 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 3. Jelentkezz be a `nadorig@gmail.com` vagy a `prievarat@gmail.com` Google fiókoddal.  
    *(Biztonsági okokból más Google fiókkal nem enged belépni a rendszer).*
 
-### 2. Kérdéssor előkészítése
+### 2. Kérdéssor előkészítése (Külön kérdéstár mindkét előadónak)
+- **Személyes kérdésarchívum:** Az adminisztrátorok alapértelmezetten a saját kérdéseiket látják (`Saját` fül), de bármikor megtekinthetik a teljes gyűjteményt is (`Összes` fül).
 - **Mintakérdések betöltése (Első alkalommal):**  
-  Ha a kérdéstár üres, kattints a **`[ MINTAKÉRDÉSEK BETÖLTÉSE ]`** gombra, és az összes kérdéstípusból azonnal betölt egy-egy kipróbálható mintát (beleértve a csillagos és a 0-100%-os skálát is).
+  Ha a saját kérdéstárad üres, kattints a **`[ MINTAKÉRDÉSEK BETÖLTÉSE ]`** gombra, és az összes kérdéstípusból azonnal betölt egy-egy kipróbálható mintát a saját fiókodhoz.
 - **Új kérdés létrehozása:**  
   Kattints a **`[ + ÚJ KÉRDÉS ]`** gombra. Válaszd ki a típust, írd be a kérdés szövegét, az opcionális leírást, és add meg a típushoz tartozó beállításokat.
 - **Kérdés törlése:**  
@@ -89,6 +90,7 @@ Az alkalmazás egyetlen központi szobára épül, így nincs szükség szobakó
 - **Kivetítő:** Az opciók átlagosan kapott pontszáma rangsorolt sávdiagramon.
 
 ### 6. 2x2-es rács (`grid2x2`)
+- **Tengelyek elhelyezése:** A függőleges (Y) tengely a bal oldalon (`↑`), a vízszintes (X) tengely pedig alul (`→`) jelenik meg [MIN] és [MAX] jelölésekkel (a felső címke nélkül).
 - **Résztvevő:** Egyedi X és Y tengely (pl. *Ráfordítás* vs. *Várható hatás*). A résztvevő közvetlenül rákattinthat vagy ráérinthet a rácsra a pont elhelyezéséhez.
 - **Kivetítő:** 4 kvadránsra osztott szálkeresztes koordináta-rendszer, ahol a résztvevők pontjai élő pontfelhőként jelennek meg.
 
