@@ -20,12 +20,30 @@ export default function PresenterView() {
   const [lang, setLang] = useState(getSavedLanguage);
 
   const t = translations[lang] || translations.hu;
-  const joinUrl = window.location.origin + window.location.pathname;
+  const cleanPath = window.location.pathname.endsWith('/')
+    ? window.location.pathname
+    : window.location.pathname + '/';
+  const joinUrl = window.location.origin + cleanPath;
 
   const handleSelectLang = (newLang) => {
     setLang(newLang);
     saveLanguage(newLang);
   };
+
+  // Keyboard shortcut listener: 'Q' toggles QR modal, 'Esc' closes it
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'q' || e.key === 'Q') {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+        setShowQrModal((prev) => !prev);
+      } else if (e.key === 'Escape') {
+        setShowQrModal(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -102,9 +120,11 @@ export default function PresenterView() {
           {/* QR trigger */}
           <button
             onClick={() => setShowQrModal(true)}
-            className="px-3 py-1.5 border border-neutral-700 hover:border-neutral-500 bg-neutral-900 text-neutral-200 transition text-[10px] uppercase tracking-[0.15em] cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-700 hover:border-neutral-500 bg-neutral-900 text-neutral-200 transition text-[10px] uppercase tracking-[0.15em] cursor-pointer"
+            title={`${t.qr_modal_title} [Q]`}
           >
-            [ {t.qr_code_btn} ]
+            <span className="w-2 h-2 bg-white inline-block"></span>
+            <span>[ {t.qr_code_btn} ]</span>
           </button>
 
           {/* Language Selector */}
@@ -189,14 +209,40 @@ export default function PresenterView() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="px-6 py-4 sm:px-12 border-t border-neutral-900 bg-neutral-950/70 flex items-center justify-between font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-        <div className="flex items-center gap-3">
-          <span>{t.direct_access}:</span>
-          <span className="text-neutral-300">{joinUrl}</span>
+      {/* Footer with Persistent Scannable QR Code */}
+      <footer className="px-6 py-3.5 sm:px-12 border-t border-neutral-900 bg-neutral-950/85 backdrop-blur-md flex items-center justify-between font-technical text-[10px] uppercase tracking-[0.2em] text-neutral-500 z-10">
+        <div className="flex items-center gap-4">
+          {/* Always visible, scannable QR Code */}
+          <div
+            onClick={() => setShowQrModal(true)}
+            className="p-1.5 bg-white border border-neutral-700 shadow-xl cursor-pointer hover:scale-105 transition-transform flex-shrink-0"
+            title={`${t.qr_modal_title} - ${t.click_to_enlarge}`}
+          >
+            <QRCodeSVG value={joinUrl} size={72} level="M" />
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-neutral-200 tracking-widest">
+                [ {t.scan_to_join} ]
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(true)}
+                className="text-[9px] text-neutral-500 hover:text-neutral-300 lowercase font-mono cursor-pointer underline underline-offset-2 transition"
+              >
+                ({t.click_to_enlarge})
+              </button>
+            </div>
+            <div className="text-xs font-semibold text-white tracking-wider font-mono select-all">
+              {joinUrl}
+            </div>
+          </div>
         </div>
-        <div>
-          <span>VÉLEMÉNY</span>
+
+        <div className="hidden sm:flex flex-col items-end gap-1">
+          <span className="text-neutral-400 font-bold tracking-[0.3em]">VÉLEMÉNY</span>
+          <span className="text-[8px] text-neutral-600 tracking-widest">[ LIVE INTERACTIVE DISPLAY ]</span>
         </div>
       </footer>
 
@@ -208,27 +254,30 @@ export default function PresenterView() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-neutral-950 border border-neutral-800 p-8 max-w-sm w-full text-center space-y-6 shadow-2xl relative"
+            className="bg-neutral-950 border border-neutral-800 p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative"
           >
             <div className="flex justify-between items-center text-[10px] font-technical uppercase tracking-[0.25em] text-neutral-500 pb-3 border-b border-neutral-900">
               <span>{t.qr_modal_title}</span>
               <button
                 onClick={() => setShowQrModal(false)}
-                className="text-neutral-400 hover:text-white cursor-pointer"
+                className="text-neutral-400 hover:text-white cursor-pointer px-2 py-1 border border-neutral-800 hover:border-neutral-600"
               >
-                [ X ]
+                [ X / ESC ]
               </button>
             </div>
 
-            <div className="p-4 bg-white inline-block">
-              <QRCodeSVG value={joinUrl} size={200} level="M" />
+            <div className="p-4 bg-white inline-block shadow-2xl">
+              <QRCodeSVG value={joinUrl} size={260} level="M" />
             </div>
 
-            <p className="font-technical text-xs text-neutral-400 break-all">{joinUrl}</p>
+            <div className="space-y-1 font-technical">
+              <div className="text-[10px] text-neutral-500 uppercase tracking-widest">{t.direct_access}:</div>
+              <p className="text-sm font-bold text-neutral-200 tracking-wider font-mono break-all select-all">{joinUrl}</p>
+            </div>
 
             <button
               onClick={() => setShowQrModal(false)}
-              className="w-full py-2.5 border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 font-technical text-xs uppercase tracking-widest cursor-pointer"
+              className="w-full py-2.5 border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 font-technical text-xs uppercase tracking-widest cursor-pointer transition"
             >
               [ {t.close_modal} ]
             </button>
